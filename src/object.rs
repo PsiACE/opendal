@@ -20,8 +20,7 @@ use std::io::Result;
 use std::ops::RangeBounds;
 use std::sync::Arc;
 
-use futures::io;
-use futures::io::Cursor;
+use futures::AsyncReadExt;
 use futures::AsyncWriteExt;
 #[cfg(feature = "serde")]
 use serde::Deserialize;
@@ -262,16 +261,14 @@ impl Object {
         let s = self.acc.read(&op).await?;
 
         let br = BytesRange::from(range);
-        let buffer = if let Some(range_size) = br.size() {
-            Vec::with_capacity(range_size as usize)
-        } else {
-            Vec::with_capacity(4 * 1024 * 1024)
-        };
-        let mut bs = Cursor::new(buffer);
 
-        io::copy(s, &mut bs).await?;
+        let range_size = br.size().unwrap_or(4 * 1024 * 1024);
 
-        Ok(bs.into_inner())
+        let mut buffer = Vec::with_capacity(range_size as usize);
+
+        s.take(range_size).read_to_end(&mut buffer).await?;
+
+        Ok(buffer)
     }
 
     /// Create a new reader which can read the whole object.
