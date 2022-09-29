@@ -83,7 +83,7 @@ percent-encoding = "2.1"
 pin-project = "1.0"
 quick-xml = { version = "0.23", features = ["serialize"] }
 radix_trie = { version = "0.2", optional = true }
-reqsign = "0.3"
+reqsign = "0.5"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
 time = "0.3"
