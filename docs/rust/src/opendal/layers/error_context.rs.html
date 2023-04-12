@@ -474,7 +474,6 @@
 <a href="#474" id="474">474</a>
 <a href="#475" id="475">475</a>
 <a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -679,8 +678,8 @@
             .<span class="kw">await
     </span>}
 
-    <span class="kw">fn </span>presign(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpPresign) -&gt; <span class="prelude-ty">Result</span>&lt;RpPresign&gt; {
-        <span class="self">self</span>.inner.presign(path, args).map_err(|err| {
+    <span class="kw">async fn </span>presign(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpPresign) -&gt; <span class="prelude-ty">Result</span>&lt;RpPresign&gt; {
+        <span class="self">self</span>.inner.presign(path, args).<span class="kw">await</span>.map_err(|err| {
             err.with_operation(Operation::Presign)
                 .with_context(<span class="string">&quot;service&quot;</span>, <span class="self">self</span>.meta.scheme())
                 .with_context(<span class="string">&quot;path&quot;</span>, path)
@@ -691,9 +690,8 @@
         <span class="self">self</span>.inner
             .batch(args)
             .map_ok(|v| {
-                <span class="kw">let </span>BatchedResults::Delete(res) = v.into_results();
-
-                <span class="kw">let </span>res = res
+                <span class="kw">let </span>res = v
+                    .into_results()
                     .into_iter()
                     .map(|(path, res)| {
                         <span class="kw">let </span>res = res.map_err(|err| {
@@ -705,7 +703,7 @@
                     })
                     .collect();
 
-                RpBatch::new(BatchedResults::Delete(res))
+                RpBatch::new(res)
             })
             .map_err(|err| {
                 err.with_operation(Operation::Batch)
@@ -953,4 +951,4 @@
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

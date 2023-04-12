@@ -106,6 +106,13 @@
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -127,10 +134,11 @@
 <span class="kw">use </span>std::fmt::Formatter;
 
 <span class="doccomment">/// Operation is the name for APIs in `Accessor`.
-</span><span class="attr">#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
+</span><span class="attr">#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Default)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>Operation {
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::info`]
+    </span><span class="attr">#[default]
     </span>Info,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::create`]
     </span>Create,
@@ -138,6 +146,10 @@
     </span>Read,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::write`]
     </span>Write,
+    <span class="doccomment">/// Operation for [`crate::raw::Accessor::copy`]
+    </span>Copy,
+    <span class="doccomment">/// Operation for [`crate::raw::Accessor::rename`]
+    </span>Rename,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::stat`]
     </span>Stat,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::delete`]
@@ -156,6 +168,10 @@
     </span>BlockingRead,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::blocking_write`]
     </span>BlockingWrite,
+    <span class="doccomment">/// Operation for [`crate::raw::Accessor::blocking_copy`]
+    </span>BlockingCopy,
+    <span class="doccomment">/// Operation for [`crate::raw::Accessor::blocking_rename`]
+    </span>BlockingMove,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::blocking_stat`]
     </span>BlockingStat,
     <span class="doccomment">/// Operation for [`crate::raw::Accessor::blocking_delete`]
@@ -173,12 +189,6 @@
     }
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>Operation {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        Operation::Info
-    }
-}
-
 <span class="kw">impl </span>Display <span class="kw">for </span>Operation {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.into_static())
@@ -192,6 +202,8 @@
             Operation::Create =&gt; <span class="string">&quot;create&quot;</span>,
             Operation::Read =&gt; <span class="string">&quot;read&quot;</span>,
             Operation::Write =&gt; <span class="string">&quot;write&quot;</span>,
+            Operation::Copy =&gt; <span class="string">&quot;copy&quot;</span>,
+            Operation::Rename =&gt; <span class="string">&quot;rename&quot;</span>,
             Operation::Stat =&gt; <span class="string">&quot;stat&quot;</span>,
             Operation::Delete =&gt; <span class="string">&quot;delete&quot;</span>,
             Operation::List =&gt; <span class="string">&quot;list&quot;</span>,
@@ -201,6 +213,8 @@
             Operation::BlockingCreate =&gt; <span class="string">&quot;blocking_create&quot;</span>,
             Operation::BlockingRead =&gt; <span class="string">&quot;blocking_read&quot;</span>,
             Operation::BlockingWrite =&gt; <span class="string">&quot;blocking_write&quot;</span>,
+            Operation::BlockingCopy =&gt; <span class="string">&quot;blocking_copy&quot;</span>,
+            Operation::BlockingMove =&gt; <span class="string">&quot;blocking_rename&quot;</span>,
             Operation::BlockingStat =&gt; <span class="string">&quot;blocking_stat&quot;</span>,
             Operation::BlockingDelete =&gt; <span class="string">&quot;blocking_delete&quot;</span>,
             Operation::BlockingList =&gt; <span class="string">&quot;blocking_list&quot;</span>,
@@ -215,4 +229,4 @@
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

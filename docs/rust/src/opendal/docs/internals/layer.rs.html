@@ -57,9 +57,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-</span><span class="doccomment">//! The internal implement details of [`Layer`].
+</span><span class="doccomment">//! The internal implementation details of [`Layer`].
 //!
-//! [`Layer`] itself is quiet simple:
+//! [`Layer`] itself is quite simple:
 //!
 //! ```ignore
 //! pub trait Layer&lt;A: Accessor&gt; {
@@ -69,13 +69,13 @@
 //! }
 //! ```
 //!
-//! `XxxLayer` will wrap input [`Accessor`] as inner and returns a new [`Accessor`]. So normally the implementation of [`Layer`] will be split into two parts:
+//! `XxxLayer` will wrap input [`Accessor`] as inner and return a new [`Accessor`]. So normally the implementation of [`Layer`] will be split into two parts:
 //!
-//! - `XxxLayer` will implements [`Layer`] and return `XxxAccessor` as `Self::LayeredAccessor`.
-//! - `XxxAccessor` will implements [`Accessor`] and being built by `XxxLayer`.
+//! - `XxxLayer` will implement [`Layer`] and return `XxxAccessor` as `Self::LayeredAccessor`.
+//! - `XxxAccessor` will implement [`Accessor`] and be built by `XxxLayer`.
 //!
 //! Most layer only implements part of [`Accessor`], so we provide
-//! [`LayeredAccessor`] which will forward all not implemented methods to
+//! [`LayeredAccessor`] which will forward all unimplemented methods to
 //! `inner`. It&#39;s highly recommend to implement [`LayeredAccessor`] trait
 //! instead.
 //!
@@ -83,4 +83,4 @@
 //! [`Accessor`]: crate::raw::Accessor
 //! [`LayeredAccessor`]: crate::raw::LayeredAccessor
 </span></code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
