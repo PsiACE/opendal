@@ -39,7 +39,7 @@ futures = "0.3"
 opendal.workspace = true
 quick-xml = { version = "0.27", features = ["serialize", "overlapped-lists"] }
 serde = { version = "1", features = ["derive"] }
-tokio = { version = "1.27", features = [
+tokio = { version = "1.28", features = [
   "fs",
   "macros",
   "rt-multi-thread",
