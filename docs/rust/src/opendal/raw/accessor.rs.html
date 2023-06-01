@@ -569,12 +569,6 @@
 <a href="#569" id="569">569</a>
 <a href="#570" id="570">570</a>
 <a href="#571" id="571">571</a>
-<a href="#572" id="572">572</a>
-<a href="#573" id="573">573</a>
-<a href="#574" id="574">574</a>
-<a href="#575" id="575">575</a>
-<a href="#576" id="576">576</a>
-<a href="#577" id="577">577</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -597,7 +591,6 @@
 
 <span class="kw">use </span>async_trait::async_trait;
 
-<span class="kw">use </span><span class="kw">crate</span>::ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::raw::<span class="kw-2">*</span>;
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
@@ -643,11 +636,13 @@
     <span class="doccomment">/// BlockingWriter is the associated writer the could return in
     /// `blocking_write` operation.
     </span><span class="kw">type </span>BlockingWriter: oio::BlockingWrite;
-    <span class="doccomment">/// Pager is the associated page that return in `list` or `scan` operation.
+    <span class="doccomment">/// Pager is the associated page that return in `list` operation.
     </span><span class="kw">type </span>Pager: oio::Page;
     <span class="doccomment">/// BlockingPager is the associated pager that could return in
-    /// `blocking_list` or `scan` operation.
+    /// `blocking_list` operation.
     </span><span class="kw">type </span>BlockingPager: oio::BlockingPage;
+    <span class="doccomment">/// Appender is the associated appender that could return in `append` operation.
+    </span><span class="kw">type </span>Appender: oio::Append;
 
     <span class="doccomment">/// Invoke the `info` operation to get metadata of accessor.
     ///
@@ -670,7 +665,7 @@
     ///
     /// - Input path MUST match with EntryMode, DON&#39;T NEED to check mode.
     /// - Create on existing dir SHOULD succeed.
-    </span><span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    </span><span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw">_</span>) = (path, args);
 
         <span class="prelude-val">Err</span>(Error::new(
@@ -706,6 +701,23 @@
     ///
     /// - Input path MUST be file path, DON&#39;T NEED to check mode.
     </span><span class="kw">async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpWrite) -&gt; <span class="prelude-ty">Result</span>&lt;(RpWrite, <span class="self">Self</span>::Writer)&gt; {
+        <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw">_</span>) = (path, args);
+
+        <span class="prelude-val">Err</span>(Error::new(
+            ErrorKind::Unsupported,
+            <span class="string">&quot;operation is not supported&quot;</span>,
+        ))
+    }
+
+    <span class="doccomment">/// Invoke the `append` operation on the specified path, returns a
+    /// appended size if operate successful.
+    ///
+    ///  Require [`Capability::append`]
+    ///
+    /// # Behavior
+    ///
+    /// - Input path MUST be file path, DON&#39;T NEED to check mode.
+    </span><span class="kw">async fn </span>append(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpAppend) -&gt; <span class="prelude-ty">Result</span>&lt;(RpAppend, <span class="self">Self</span>::Appender)&gt; {
         <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw">_</span>) = (path, args);
 
         <span class="prelude-val">Err</span>(Error::new(
@@ -796,18 +808,6 @@
         ))
     }
 
-    <span class="doccomment">/// Invoke the `scan` operation on the specified path.
-    ///
-    /// Require [`Capability::scan`]
-    </span><span class="kw">async fn </span>scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::Pager)&gt; {
-        <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw">_</span>) = (path, args);
-
-        <span class="prelude-val">Err</span>(Error::new(
-            ErrorKind::Unsupported,
-            <span class="string">&quot;operation is not supported&quot;</span>,
-        ))
-    }
-
     <span class="doccomment">/// Invoke the `presign` operation on the specified path.
     ///
     /// Require [`Capability::presign`]
@@ -841,7 +841,7 @@
     /// This operation is the blocking version of [`Accessor::create_dir`]
     ///
     /// Require [`Capability::create_dir`] and [`Capability::blocking`]
-    </span><span class="kw">fn </span>blocking_create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    </span><span class="kw">fn </span>blocking_create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw">_</span>) = (path, args);
 
         <span class="prelude-val">Err</span>(Error::new(
@@ -951,18 +951,6 @@
             <span class="string">&quot;operation is not supported&quot;</span>,
         ))
     }
-
-    <span class="doccomment">/// Invoke the `blocking_scan` operation on the specified path.
-    ///
-    /// Require [`Capability::scan`] and [`Capability::blocking`]
-    </span><span class="kw">fn </span>blocking_scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::BlockingPager)&gt; {
-        <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw">_</span>) = (path, args);
-
-        <span class="prelude-val">Err</span>(Error::new(
-            ErrorKind::Unsupported,
-            <span class="string">&quot;operation is not supported&quot;</span>,
-        ))
-    }
 }
 
 <span class="doccomment">/// Dummy implementation of accessor.
@@ -972,6 +960,7 @@
     <span class="kw">type </span>BlockingReader = ();
     <span class="kw">type </span>Writer = ();
     <span class="kw">type </span>BlockingWriter = ();
+    <span class="kw">type </span>Appender = ();
     <span class="kw">type </span>Pager = ();
     <span class="kw">type </span>BlockingPager = ();
 
@@ -993,6 +982,7 @@
     <span class="kw">type </span>BlockingReader = T::BlockingReader;
     <span class="kw">type </span>Writer = T::Writer;
     <span class="kw">type </span>BlockingWriter = T::BlockingWriter;
+    <span class="kw">type </span>Appender = T::Appender;
     <span class="kw">type </span>Pager = T::Pager;
     <span class="kw">type </span>BlockingPager = T::BlockingPager;
 
@@ -1000,7 +990,7 @@
         <span class="self">self</span>.as_ref().info()
     }
 
-    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="self">self</span>.as_ref().create_dir(path, args).<span class="kw">await
     </span>}
 
@@ -1009,6 +999,10 @@
     </span>}
     <span class="kw">async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpWrite) -&gt; <span class="prelude-ty">Result</span>&lt;(RpWrite, <span class="self">Self</span>::Writer)&gt; {
         <span class="self">self</span>.as_ref().write(path, args).<span class="kw">await
+    </span>}
+
+    <span class="kw">async fn </span>append(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpAppend) -&gt; <span class="prelude-ty">Result</span>&lt;(RpAppend, <span class="self">Self</span>::Appender)&gt; {
+        <span class="self">self</span>.as_ref().append(path, args).<span class="kw">await
     </span>}
 
     <span class="kw">async fn </span>copy(<span class="kw-2">&amp;</span><span class="self">self</span>, from: <span class="kw-2">&amp;</span>str, to: <span class="kw-2">&amp;</span>str, args: OpCopy) -&gt; <span class="prelude-ty">Result</span>&lt;RpCopy&gt; {
@@ -1028,9 +1022,6 @@
     <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
         <span class="self">self</span>.as_ref().list(path, args).<span class="kw">await
     </span>}
-    <span class="kw">async fn </span>scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::Pager)&gt; {
-        <span class="self">self</span>.as_ref().scan(path, args).<span class="kw">await
-    </span>}
 
     <span class="kw">async fn </span>batch(<span class="kw-2">&amp;</span><span class="self">self</span>, args: OpBatch) -&gt; <span class="prelude-ty">Result</span>&lt;RpBatch&gt; {
         <span class="self">self</span>.as_ref().batch(args).<span class="kw">await
@@ -1040,7 +1031,7 @@
         <span class="self">self</span>.as_ref().presign(path, args).<span class="kw">await
     </span>}
 
-    <span class="kw">fn </span>blocking_create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">fn </span>blocking_create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="self">self</span>.as_ref().blocking_create_dir(path, args)
     }
     <span class="kw">fn </span>blocking_read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpRead) -&gt; <span class="prelude-ty">Result</span>&lt;(RpRead, <span class="self">Self</span>::BlockingReader)&gt; {
@@ -1067,10 +1058,6 @@
     <span class="kw">fn </span>blocking_list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::BlockingPager)&gt; {
         <span class="self">self</span>.as_ref().blocking_list(path, args)
     }
-
-    <span class="kw">fn </span>blocking_scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::BlockingPager)&gt; {
-        <span class="self">self</span>.as_ref().blocking_scan(path, args)
-    }
 }
 
 <span class="doccomment">/// FusedAccessor is the type erased accessor with `Arc&lt;dyn Accessor&gt;`.
@@ -1080,6 +1067,7 @@
         BlockingReader = oio::BlockingReader,
         Writer = oio::Writer,
         BlockingWriter = oio::BlockingWriter,
+        Appender = oio::Appender,
         Pager = oio::Pager,
         BlockingPager = oio::BlockingPager,
     &gt;,

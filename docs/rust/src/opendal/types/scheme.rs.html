@@ -182,6 +182,20 @@
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -219,10 +233,14 @@
     </span>Azblob,
     <span class="doccomment">/// [azdfs][crate::services::Azdfs]: Azure Data Lake Storage Gen2.
     </span>Azdfs,
+    <span class="doccomment">/// [cos][crate::services::Cos]: Tencent Cloud Object Storage services.
+    </span>Cos,
     <span class="doccomment">/// [dashmap][crate::services::Dashmap]: dashmap backend support.
     </span>Dashmap,
     <span class="doccomment">/// [fs][crate::services::Fs]: POSIX alike file system.
     </span>Fs,
+    <span class="doccomment">/// [ftp][crate::services::Ftp]: FTP backend.
+    </span>Ftp,
     <span class="doccomment">/// [gcs][crate::services::Gcs]: Google Cloud Storage backend.
     </span>Gcs,
     <span class="doccomment">/// [ghac][crate::services::Ghac]: GitHub Action Cache services.
@@ -231,8 +249,7 @@
     </span>Hdfs,
     <span class="doccomment">/// [http][crate::services::Http]: HTTP backend.
     </span>Http,
-    <span class="doccomment">/// [ftp][crate::services::Ftp]: FTP backend.
-    </span>Ftp,
+
     <span class="doccomment">/// [ipmfs][crate::services::Ipfs]: IPFS HTTP Gateway
     </span>Ipfs,
     <span class="doccomment">/// [ipmfs][crate::services::Ipmfs]: IPFS mutable file system
@@ -247,6 +264,8 @@
     </span>Obs,
     <span class="doccomment">/// [onedrive][crate::services::Onedrive]: Microsoft OneDrive services.
     </span>Onedrive,
+    <span class="doccomment">/// [gdrive][crate::services::Gdrive]: GoogleDrive services.
+    </span>Gdrive,
     <span class="doccomment">/// [oss][crate::services::Oss]: Aliyun Object Storage Services
     </span>Oss,
     <span class="doccomment">/// [redis][crate::services::Redis]: Redis services
@@ -255,10 +274,14 @@
     </span>Rocksdb,
     <span class="doccomment">/// [s3][crate::services::S3]: AWS S3 alike services.
     </span>S3,
+    <span class="doccomment">/// [sftp][crate::services::Sftp]: SFTP services
+    </span>Sftp,
     <span class="doccomment">/// [sled][crate::services::Sled]: Sled services
     </span>Sled,
     <span class="doccomment">/// [Supabase][crate::services::Supabase]: Supabase storage service
     </span>Supabase,
+    <span class="doccomment">/// [Vercel Artifacts][crate::services::VercelArtifacts]: Vercel Artifacts service, as known as Vercel Remote Caching.
+    </span>VercelArtifacts,
     <span class="doccomment">/// [wasabi][crate::services::Wasabi]: Wasabi service
     </span>Wasabi,
     <span class="doccomment">/// [webdav][crate::services::Webdav]: WebDAV support.
@@ -301,6 +324,7 @@
         <span class="kw">match </span>s.as_str() {
             <span class="string">&quot;azblob&quot; </span>=&gt; <span class="prelude-val">Ok</span>(Scheme::Azblob),
             <span class="string">&quot;azdfs&quot; </span>=&gt; <span class="prelude-val">Ok</span>(Scheme::Azdfs),
+            <span class="string">&quot;cos&quot; </span>=&gt; <span class="prelude-val">Ok</span>(Scheme::Cos),
             <span class="string">&quot;dashmap&quot; </span>=&gt; <span class="prelude-val">Ok</span>(Scheme::Dashmap),
             <span class="string">&quot;fs&quot; </span>=&gt; <span class="prelude-val">Ok</span>(Scheme::Fs),
             <span class="string">&quot;gcs&quot; </span>=&gt; <span class="prelude-val">Ok</span>(Scheme::Gcs),
@@ -333,6 +357,7 @@
         <span class="kw">match </span>v {
             Scheme::Azblob =&gt; <span class="string">&quot;azblob&quot;</span>,
             Scheme::Azdfs =&gt; <span class="string">&quot;azdfs&quot;</span>,
+            Scheme::Cos =&gt; <span class="string">&quot;cos&quot;</span>,
             Scheme::Dashmap =&gt; <span class="string">&quot;dashmap&quot;</span>,
             Scheme::Fs =&gt; <span class="string">&quot;fs&quot;</span>,
             Scheme::Gcs =&gt; <span class="string">&quot;gcs&quot;</span>,
@@ -347,11 +372,14 @@
             Scheme::Moka =&gt; <span class="string">&quot;moka&quot;</span>,
             Scheme::Obs =&gt; <span class="string">&quot;obs&quot;</span>,
             Scheme::Onedrive =&gt; <span class="string">&quot;onedrive&quot;</span>,
+            Scheme::Gdrive =&gt; <span class="string">&quot;gdrive&quot;</span>,
             Scheme::Redis =&gt; <span class="string">&quot;redis&quot;</span>,
             Scheme::Rocksdb =&gt; <span class="string">&quot;rocksdb&quot;</span>,
             Scheme::S3 =&gt; <span class="string">&quot;s3&quot;</span>,
+            Scheme::Sftp =&gt; <span class="string">&quot;sftp&quot;</span>,
             Scheme::Sled =&gt; <span class="string">&quot;sled&quot;</span>,
             Scheme::Supabase =&gt; <span class="string">&quot;supabase&quot;</span>,
+            Scheme::VercelArtifacts =&gt; <span class="string">&quot;vercel_artifacts&quot;</span>,
             Scheme::Oss =&gt; <span class="string">&quot;oss&quot;</span>,
             Scheme::Wasabi =&gt; <span class="string">&quot;wasabi&quot;</span>,
             Scheme::Webdav =&gt; <span class="string">&quot;webdav&quot;</span>,

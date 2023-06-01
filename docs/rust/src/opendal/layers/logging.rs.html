@@ -1657,6 +1657,66 @@
 <a href="#1657" id="1657">1657</a>
 <a href="#1658" id="1658">1658</a>
 <a href="#1659" id="1659">1659</a>
+<a href="#1660" id="1660">1660</a>
+<a href="#1661" id="1661">1661</a>
+<a href="#1662" id="1662">1662</a>
+<a href="#1663" id="1663">1663</a>
+<a href="#1664" id="1664">1664</a>
+<a href="#1665" id="1665">1665</a>
+<a href="#1666" id="1666">1666</a>
+<a href="#1667" id="1667">1667</a>
+<a href="#1668" id="1668">1668</a>
+<a href="#1669" id="1669">1669</a>
+<a href="#1670" id="1670">1670</a>
+<a href="#1671" id="1671">1671</a>
+<a href="#1672" id="1672">1672</a>
+<a href="#1673" id="1673">1673</a>
+<a href="#1674" id="1674">1674</a>
+<a href="#1675" id="1675">1675</a>
+<a href="#1676" id="1676">1676</a>
+<a href="#1677" id="1677">1677</a>
+<a href="#1678" id="1678">1678</a>
+<a href="#1679" id="1679">1679</a>
+<a href="#1680" id="1680">1680</a>
+<a href="#1681" id="1681">1681</a>
+<a href="#1682" id="1682">1682</a>
+<a href="#1683" id="1683">1683</a>
+<a href="#1684" id="1684">1684</a>
+<a href="#1685" id="1685">1685</a>
+<a href="#1686" id="1686">1686</a>
+<a href="#1687" id="1687">1687</a>
+<a href="#1688" id="1688">1688</a>
+<a href="#1689" id="1689">1689</a>
+<a href="#1690" id="1690">1690</a>
+<a href="#1691" id="1691">1691</a>
+<a href="#1692" id="1692">1692</a>
+<a href="#1693" id="1693">1693</a>
+<a href="#1694" id="1694">1694</a>
+<a href="#1695" id="1695">1695</a>
+<a href="#1696" id="1696">1696</a>
+<a href="#1697" id="1697">1697</a>
+<a href="#1698" id="1698">1698</a>
+<a href="#1699" id="1699">1699</a>
+<a href="#1700" id="1700">1700</a>
+<a href="#1701" id="1701">1701</a>
+<a href="#1702" id="1702">1702</a>
+<a href="#1703" id="1703">1703</a>
+<a href="#1704" id="1704">1704</a>
+<a href="#1705" id="1705">1705</a>
+<a href="#1706" id="1706">1706</a>
+<a href="#1707" id="1707">1707</a>
+<a href="#1708" id="1708">1708</a>
+<a href="#1709" id="1709">1709</a>
+<a href="#1710" id="1710">1710</a>
+<a href="#1711" id="1711">1711</a>
+<a href="#1712" id="1712">1712</a>
+<a href="#1713" id="1713">1713</a>
+<a href="#1714" id="1714">1714</a>
+<a href="#1715" id="1715">1715</a>
+<a href="#1716" id="1716">1716</a>
+<a href="#1717" id="1717">1717</a>
+<a href="#1718" id="1718">1718</a>
+<a href="#1719" id="1719">1719</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -1688,7 +1748,6 @@
 <span class="kw">use </span>log::trace;
 <span class="kw">use </span>log::Level;
 
-<span class="kw">use </span><span class="kw">crate</span>::ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::raw::oio::ReadOperation;
 <span class="kw">use </span><span class="kw">crate</span>::raw::oio::WriteOperation;
 <span class="kw">use </span><span class="kw">crate</span>::raw::<span class="kw-2">*</span>;
@@ -1764,20 +1823,36 @@
     /// For example: accessor returns NotFound.
     ///
     /// `None` means disable the log for error.
-    </span><span class="kw">pub fn </span>with_error_level(<span class="kw-2">mut </span><span class="self">self</span>, level: <span class="prelude-ty">Option</span>&lt;Level&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.error_level = level;
-        <span class="self">self
-    </span>}
+    </span><span class="kw">pub fn </span>with_error_level(<span class="kw-2">mut </span><span class="self">self</span>, level: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(level_str) = level {
+            <span class="kw">let </span>level = level_str.parse().map_err(|<span class="kw">_</span>| {
+                Error::new(ErrorKind::ConfigInvalid, <span class="string">&quot;invalid log level&quot;</span>)
+                    .with_context(<span class="string">&quot;level&quot;</span>, level_str)
+            })<span class="question-mark">?</span>;
+            <span class="self">self</span>.error_level = <span class="prelude-val">Some</span>(level);
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.error_level = <span class="prelude-val">None</span>;
+        }
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>)
+    }
 
     <span class="doccomment">/// Setting the log level while unexpected failure happened.
     ///
     /// For example: accessor returns Unexpected network error.
     ///
     /// `None` means disable the log for failure.
-    </span><span class="kw">pub fn </span>with_failure_level(<span class="kw-2">mut </span><span class="self">self</span>, level: <span class="prelude-ty">Option</span>&lt;Level&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.failure_level = level;
-        <span class="self">self
-    </span>}
+    </span><span class="kw">pub fn </span>with_failure_level(<span class="kw-2">mut </span><span class="self">self</span>, level: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(level_str) = level {
+            <span class="kw">let </span>level = level_str.parse().map_err(|<span class="kw">_</span>| {
+                Error::new(ErrorKind::ConfigInvalid, <span class="string">&quot;invalid log level&quot;</span>)
+                    .with_context(<span class="string">&quot;level&quot;</span>, level_str)
+            })<span class="question-mark">?</span>;
+            <span class="self">self</span>.failure_level = <span class="prelude-val">Some</span>(level);
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.failure_level = <span class="prelude-val">None</span>;
+        }
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>)
+    }
 }
 
 <span class="kw">impl</span>&lt;A: Accessor&gt; Layer&lt;A&gt; <span class="kw">for </span>LoggingLayer {
@@ -1833,6 +1908,7 @@
     <span class="kw">type </span>BlockingReader = LoggingReader&lt;A::BlockingReader&gt;;
     <span class="kw">type </span>Writer = LoggingWriter&lt;A::Writer&gt;;
     <span class="kw">type </span>BlockingWriter = LoggingWriter&lt;A::BlockingWriter&gt;;
+    <span class="kw">type </span>Appender = LoggingAppender&lt;A::Appender&gt;;
     <span class="kw">type </span>Pager = LoggingPager&lt;A::Pager&gt;;
     <span class="kw">type </span>BlockingPager = LoggingPager&lt;A::BlockingPager&gt;;
 
@@ -1859,7 +1935,7 @@
         result
     }
 
-    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="macro">debug!</span>(
             target: LOGGING_TARGET,
             <span class="string">&quot;service={} operation={} path={} -&gt; started&quot;</span>,
@@ -1975,6 +2051,51 @@
                         <span class="string">&quot;service={} operation={} path={} -&gt; {}: {err:?}&quot;</span>,
                         <span class="self">self</span>.scheme,
                         Operation::Write,
+                        path,
+                        <span class="self">self</span>.err_status(<span class="kw-2">&amp;</span>err)
+                    )
+                };
+                err
+            })
+    }
+
+    <span class="kw">async fn </span>append(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpAppend) -&gt; <span class="prelude-ty">Result</span>&lt;(RpAppend, <span class="self">Self</span>::Appender)&gt; {
+        <span class="macro">debug!</span>(
+            target: LOGGING_TARGET,
+            <span class="string">&quot;service={} operation={} path={} -&gt; started&quot;</span>,
+            <span class="self">self</span>.scheme,
+            Operation::Append,
+            path
+        );
+
+        <span class="self">self</span>.inner
+            .append(path, args)
+            .<span class="kw">await
+            </span>.map(|(rp, a)| {
+                <span class="macro">debug!</span>(
+                    target: LOGGING_TARGET,
+                    <span class="string">&quot;service={} operation={} path={} -&gt; start appending&quot;</span>,
+                    <span class="self">self</span>.scheme,
+                    Operation::Append,
+                    path,
+                );
+                <span class="kw">let </span>a = LoggingAppender::new(
+                    <span class="self">self</span>.scheme,
+                    Operation::Append,
+                    path,
+                    a,
+                    <span class="self">self</span>.failure_level,
+                );
+                (rp, a)
+            })
+            .map_err(|err| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(lvl) = <span class="self">self</span>.err_level(<span class="kw-2">&amp;</span>err) {
+                    <span class="macro">log!</span>(
+                        target: LOGGING_TARGET,
+                        lvl,
+                        <span class="string">&quot;service={} operation={} path={} -&gt; {}: {err:?}&quot;</span>,
+                        <span class="self">self</span>.scheme,
+                        Operation::Append,
                         path,
                         <span class="self">self</span>.err_status(<span class="kw-2">&amp;</span>err)
                     )
@@ -2189,54 +2310,6 @@
             .<span class="kw">await
     </span>}
 
-    <span class="kw">async fn </span>scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::Pager)&gt; {
-        <span class="macro">debug!</span>(
-            target: LOGGING_TARGET,
-            <span class="string">&quot;service={} operation={} path={} -&gt; started&quot;</span>,
-            <span class="self">self</span>.scheme,
-            Operation::Scan,
-            path
-        );
-
-        <span class="self">self</span>.inner
-            .scan(path, args)
-            .map(|v| <span class="kw">match </span>v {
-                <span class="prelude-val">Ok</span>((rp, v)) =&gt; {
-                    <span class="macro">debug!</span>(
-                        target: LOGGING_TARGET,
-                        <span class="string">&quot;service={} operation={} path={} -&gt; start scanning&quot;</span>,
-                        <span class="self">self</span>.scheme,
-                        Operation::Scan,
-                        path
-                    );
-                    <span class="kw">let </span>streamer = LoggingPager::new(
-                        <span class="self">self</span>.scheme,
-                        path,
-                        Operation::Scan,
-                        v,
-                        <span class="self">self</span>.error_level,
-                        <span class="self">self</span>.failure_level,
-                    );
-                    <span class="prelude-val">Ok</span>((rp, streamer))
-                }
-                <span class="prelude-val">Err</span>(err) =&gt; {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(lvl) = <span class="self">self</span>.err_level(<span class="kw-2">&amp;</span>err) {
-                        <span class="macro">log!</span>(
-                            target: LOGGING_TARGET,
-                            lvl,
-                            <span class="string">&quot;service={} operation={} path={} -&gt; {}: {err:?}&quot;</span>,
-                            <span class="self">self</span>.scheme,
-                            Operation::Scan,
-                            path,
-                            <span class="self">self</span>.err_status(<span class="kw-2">&amp;</span>err)
-                        );
-                    }
-                    <span class="prelude-val">Err</span>(err)
-                }
-            })
-            .<span class="kw">await
-    </span>}
-
     <span class="kw">async fn </span>presign(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpPresign) -&gt; <span class="prelude-ty">Result</span>&lt;RpPresign&gt; {
         <span class="macro">debug!</span>(
             target: LOGGING_TARGET,
@@ -2315,7 +2388,7 @@
             .<span class="kw">await
     </span>}
 
-    <span class="kw">fn </span>blocking_create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">fn </span>blocking_create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="macro">debug!</span>(
             target: LOGGING_TARGET,
             <span class="string">&quot;service={} operation={} path={} -&gt; started&quot;</span>,
@@ -2634,51 +2707,6 @@
                         <span class="string">&quot;service={} operation={} path={} -&gt; {}: {err:?}&quot;</span>,
                         <span class="self">self</span>.scheme,
                         Operation::BlockingList,
-                        path,
-                        <span class="self">self</span>.err_status(<span class="kw-2">&amp;</span>err)
-                    );
-                }
-                err
-            })
-    }
-
-    <span class="kw">fn </span>blocking_scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::BlockingPager)&gt; {
-        <span class="macro">debug!</span>(
-            target: LOGGING_TARGET,
-            <span class="string">&quot;service={} operation={} path={} -&gt; started&quot;</span>,
-            <span class="self">self</span>.scheme,
-            Operation::BlockingScan,
-            path
-        );
-
-        <span class="self">self</span>.inner
-            .blocking_scan(path, args)
-            .map(|(rp, v)| {
-                <span class="macro">debug!</span>(
-                    target: LOGGING_TARGET,
-                    <span class="string">&quot;service={} operation={} path={} -&gt; start scanning&quot;</span>,
-                    <span class="self">self</span>.scheme,
-                    Operation::BlockingScan,
-                    path
-                );
-                <span class="kw">let </span>li = LoggingPager::new(
-                    <span class="self">self</span>.scheme,
-                    path,
-                    Operation::BlockingScan,
-                    v,
-                    <span class="self">self</span>.error_level,
-                    <span class="self">self</span>.failure_level,
-                );
-                (rp, li)
-            })
-            .map_err(|err| {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(lvl) = <span class="self">self</span>.err_level(<span class="kw-2">&amp;</span>err) {
-                    <span class="macro">log!</span>(
-                        target: LOGGING_TARGET,
-                        lvl,
-                        <span class="string">&quot;service={} operation={} path={} -&gt; {}: {err:?}&quot;</span>,
-                        <span class="self">self</span>.scheme,
-                        Operation::BlockingScan,
                         path,
                         <span class="self">self</span>.err_status(<span class="kw-2">&amp;</span>err)
                     );
@@ -3152,6 +3180,98 @@
                         WriteOperation::BlockingClose,
                         <span class="self">self</span>.path,
                         <span class="self">self</span>.written,
+                    )
+                }
+                <span class="prelude-val">Err</span>(err)
+            }
+        }
+    }
+}
+
+<span class="kw">pub struct </span>LoggingAppender&lt;A&gt; {
+    scheme: Scheme,
+    op: Operation,
+    path: String,
+
+    failure_level: <span class="prelude-ty">Option</span>&lt;Level&gt;,
+
+    inner: A,
+}
+
+<span class="kw">impl</span>&lt;A&gt; LoggingAppender&lt;A&gt; {
+    <span class="kw">fn </span>new(
+        scheme: Scheme,
+        op: Operation,
+        path: <span class="kw-2">&amp;</span>str,
+        appender: A,
+        failure_level: <span class="prelude-ty">Option</span>&lt;Level&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            scheme,
+            op,
+            path: path.to_string(),
+
+            failure_level,
+
+            inner: appender,
+        }
+    }
+}
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl</span>&lt;A: oio::Append&gt; oio::Append <span class="kw">for </span>LoggingAppender&lt;A&gt; {
+    <span class="kw">async fn </span>append(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bs: Bytes) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>len = bs.len();
+
+        <span class="kw">match </span><span class="self">self</span>.inner.append(bs).<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
+                <span class="macro">trace!</span>(
+                    target: LOGGING_TARGET,
+                    <span class="string">&quot;service={} operation={} path={} -&gt; data append {}B&quot;</span>,
+                    <span class="self">self</span>.scheme,
+                    <span class="self">self</span>.op,
+                    <span class="self">self</span>.path,
+                    len
+                );
+                <span class="prelude-val">Ok</span>(())
+            }
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(lvl) = <span class="self">self</span>.failure_level {
+                    <span class="macro">log!</span>(
+                        target: LOGGING_TARGET,
+                        lvl,
+                        <span class="string">&quot;service={} operation={} path={} -&gt; data append failed: {err:?}&quot;</span>,
+                        <span class="self">self</span>.scheme,
+                        <span class="self">self</span>.op,
+                        <span class="self">self</span>.path,
+                    )
+                }
+                <span class="prelude-val">Err</span>(err)
+            }
+        }
+    }
+
+    <span class="kw">async fn </span>close(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">match </span><span class="self">self</span>.inner.close().<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
+                <span class="macro">debug!</span>(
+                    target: LOGGING_TARGET,
+                    <span class="string">&quot;service={} operation={} path={} -&gt; data appended finished&quot;</span>,
+                    <span class="self">self</span>.scheme,
+                    <span class="self">self</span>.op,
+                    <span class="self">self</span>.path,
+                );
+                <span class="prelude-val">Ok</span>(())
+            }
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(lvl) = <span class="self">self</span>.failure_level {
+                    <span class="macro">log!</span>(
+                        target: LOGGING_TARGET,
+                        lvl,
+                        <span class="string">&quot;service={} operation={} path={} -&gt; data appender close failed: {err:?}&quot;</span>,
+                        <span class="self">self</span>.scheme,
+                        <span class="self">self</span>.op,
+                        <span class="self">self</span>.path,
                     )
                 }
                 <span class="prelude-val">Err</span>(err)

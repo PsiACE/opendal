@@ -670,6 +670,22 @@
 <a href="#670" id="670">670</a>
 <a href="#671" id="671">671</a>
 <a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -704,7 +720,6 @@
 <span class="kw">use </span><span class="kw">super</span>::list_response::Multistatus;
 <span class="kw">use </span><span class="kw">super</span>::pager::WebdavPager;
 <span class="kw">use </span><span class="kw">super</span>::writer::WebdavWriter;
-<span class="kw">use </span><span class="kw">crate</span>::ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::raw::<span class="kw-2">*</span>;
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
@@ -714,8 +729,11 @@
 ///
 /// This service can be used to:
 ///
+/// - [x] stat
 /// - [x] read
 /// - [x] write
+/// - [x] create_dir
+/// - [x] delete
 /// - [x] copy
 /// - [x] rename
 /// - [x] list
@@ -868,7 +886,7 @@
             <span class="prelude-val">Some</span>(v) =&gt; v,
             <span class="prelude-val">None </span>=&gt; {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(ErrorKind::ConfigInvalid, <span class="string">&quot;endpoint is empty&quot;</span>)
-                    .with_context(<span class="string">&quot;service&quot;</span>, Scheme::Webdav))
+                    .with_context(<span class="string">&quot;service&quot;</span>, Scheme::Webdav));
             }
         };
 
@@ -931,6 +949,7 @@
     <span class="kw">type </span>BlockingReader = ();
     <span class="kw">type </span>Writer = WebdavWriter;
     <span class="kw">type </span>BlockingWriter = ();
+    <span class="kw">type </span>Appender = ();
     <span class="kw">type </span>Pager = WebdavPager;
     <span class="kw">type </span>BlockingPager = ();
 
@@ -939,19 +958,28 @@
         ma.set_scheme(Scheme::Webdav)
             .set_root(<span class="kw-2">&amp;</span><span class="self">self</span>.root)
             .set_capability(Capability {
+                stat: <span class="bool-val">true</span>,
+
                 read: <span class="bool-val">true</span>,
                 read_can_next: <span class="bool-val">true</span>,
+                read_with_range: <span class="bool-val">true</span>,
+
                 write: <span class="bool-val">true</span>,
-                list: <span class="bool-val">true</span>,
+                create_dir: <span class="bool-val">true</span>,
+                delete: <span class="bool-val">true</span>,
                 copy: <span class="bool-val">true</span>,
                 rename: <span class="bool-val">true</span>,
+
+                list: <span class="bool-val">true</span>,
+                list_with_delimiter_slash: <span class="bool-val">true</span>,
+
                 ..Default::default()
             });
 
         ma
     }
 
-    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="self">self</span>.ensure_parent_path(path).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>abs_path = build_abs_path(<span class="kw-2">&amp;</span><span class="self">self</span>.root, path);
@@ -960,9 +988,7 @@
 
     <span class="kw">async fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpRead) -&gt; <span class="prelude-ty">Result</span>&lt;(RpRead, <span class="self">Self</span>::Reader)&gt; {
         <span class="kw">let </span>resp = <span class="self">self</span>.webdav_get(path, args.range()).<span class="kw">await</span><span class="question-mark">?</span>;
-
         <span class="kw">let </span>status = resp.status();
-
         <span class="kw">match </span>status {
             StatusCode::OK | StatusCode::PARTIAL_CONTENT =&gt; {
                 <span class="kw">let </span>meta = parse_into_metadata(path, resp.headers())<span class="question-mark">?</span>;
@@ -1064,7 +1090,14 @@
         }
     }
 
-    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
+    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
+        <span class="kw">if </span>args.delimiter() != <span class="string">&quot;/&quot; </span>{
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(
+                ErrorKind::Unsupported,
+                <span class="string">&quot;webdav only support delimiter `/`&quot;</span>,
+            ));
+        }
+
         <span class="kw">let </span><span class="kw-2">mut </span>header_map = HeaderMap::new();
         header_map.insert(<span class="string">&quot;Depth&quot;</span>, <span class="string">&quot;1&quot;</span>.parse().unwrap());
         header_map.insert(header::CONTENT_TYPE, <span class="string">&quot;application/xml&quot;</span>.parse().unwrap());
@@ -1104,7 +1137,6 @@
         range: BytesRange,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;IncomingAsyncBody&gt;&gt; {
         <span class="kw">let </span>p = build_rooted_abs_path(<span class="kw-2">&amp;</span><span class="self">self</span>.root, path);
-
         <span class="kw">let </span>url: String = <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="self">self</span>.endpoint, percent_encode_path(<span class="kw-2">&amp;</span>p));
 
         <span class="kw">let </span><span class="kw-2">mut </span>req = Request::get(<span class="kw-2">&amp;</span>url);
@@ -1292,7 +1324,7 @@
         <span class="self">self</span>.client.send(req).<span class="kw">await
     </span>}
 
-    <span class="kw">async fn </span>create_internal(<span class="kw-2">&amp;</span><span class="self">self</span>, abs_path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">async fn </span>create_internal(<span class="kw-2">&amp;</span><span class="self">self</span>, abs_path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="kw">let </span>resp = <span class="kw">if </span>abs_path.ends_with(<span class="string">&#39;/&#39;</span>) {
             <span class="self">self</span>.webdav_mkcol(abs_path, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, AsyncBody::Empty)
                 .<span class="kw">await</span><span class="question-mark">?
@@ -1313,7 +1345,7 @@
             <span class="comment">// create existing file will return no_content
             </span>| StatusCode::NO_CONTENT =&gt; {
                 resp.into_body().consume().<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(RpCreate::default())
+                <span class="prelude-val">Ok</span>(RpCreateDir::default())
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(parse_error(resp).<span class="kw">await</span><span class="question-mark">?</span>),
         }

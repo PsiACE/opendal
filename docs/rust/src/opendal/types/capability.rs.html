@@ -174,6 +174,14 @@
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -219,7 +227,7 @@
 /// - Operation with sub operations should be named like `presign_read`.
 /// - Operation with variants should be named like `read_can_seek`.
 /// - Operation with arguments should be named like `read_with_range`.
-/// - Operation with limtations should be named like `batch_max_operations`.
+/// - Operation with limitations should be named like `batch_max_operations`.
 </span><span class="attr">#[derive(Copy, Clone, Default)]
 </span><span class="kw">pub struct </span>Capability {
     <span class="doccomment">/// If operator supports stat natively, it will be true.
@@ -262,11 +270,26 @@
     <span class="doccomment">/// If operator supports write with cache control natively, it will be true.
     </span><span class="kw">pub </span>write_with_cache_control: bool,
 
+    <span class="doccomment">/// If operator supports append natively, it will be true.
+    </span><span class="kw">pub </span>append: bool,
+    <span class="doccomment">/// If operator supports append with content type natively, it will be true.
+    </span><span class="kw">pub </span>append_with_content_type: bool,
+    <span class="doccomment">/// If operator supports append with content disposition natively, it will be true.
+    </span><span class="kw">pub </span>append_with_content_disposition: bool,
+    <span class="doccomment">/// If operator supports append with cache control natively, it will be true.
+    </span><span class="kw">pub </span>append_with_cache_control: bool,
+
     <span class="doccomment">/// If operator supports create dir natively, it will be true.
     </span><span class="kw">pub </span>create_dir: bool,
 
     <span class="doccomment">/// If operator supports delete natively, it will be true.
     </span><span class="kw">pub </span>delete: bool,
+
+    <span class="doccomment">/// If operator supports copy natively, it will be true.
+    </span><span class="kw">pub </span>copy: bool,
+
+    <span class="doccomment">/// If operator supports rename natively, it will be true.
+    </span><span class="kw">pub </span>rename: bool,
 
     <span class="doccomment">/// If operator supports list natively, it will be true.
     </span><span class="kw">pub </span>list: bool,
@@ -274,17 +297,10 @@
     </span><span class="kw">pub </span>list_with_limit: bool,
     <span class="doccomment">/// If backend supports list with start after, it will be true.
     </span><span class="kw">pub </span>list_with_start_after: bool,
-
-    <span class="doccomment">/// If operator supports scan natively, it will be true.
-    </span><span class="kw">pub </span>scan: bool,
-    <span class="doccomment">/// If backend supports scan with limit, it will be true.
-    </span><span class="kw">pub </span>scan_with_limit: bool,
-
-    <span class="doccomment">/// If operator supports copy natively, it will be true.
-    </span><span class="kw">pub </span>copy: bool,
-
-    <span class="doccomment">/// If operator supports rename natively, it will be true.
-    </span><span class="kw">pub </span>rename: bool,
+    <span class="doccomment">/// If backend support list with using slash as delimiter.
+    </span><span class="kw">pub </span>list_with_delimiter_slash: bool,
+    <span class="doccomment">/// If backend supports list without delimiter.
+    </span><span class="kw">pub </span>list_without_delimiter: bool,
 
     <span class="doccomment">/// If operator supports presign natively, it will be true.
     </span><span class="kw">pub </span>presign: bool,
@@ -310,14 +326,17 @@
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="macro">vec!</span>[];
 
-        <span class="kw">if </span><span class="self">self</span>.read {
-            s.push(<span class="string">&quot;Read&quot;</span>);
-        }
         <span class="kw">if </span><span class="self">self</span>.stat {
             s.push(<span class="string">&quot;Stat&quot;</span>);
         }
+        <span class="kw">if </span><span class="self">self</span>.read {
+            s.push(<span class="string">&quot;Read&quot;</span>);
+        }
         <span class="kw">if </span><span class="self">self</span>.write {
             s.push(<span class="string">&quot;Write&quot;</span>);
+        }
+        <span class="kw">if </span><span class="self">self</span>.append {
+            s.push(<span class="string">&quot;Append&quot;</span>);
         }
         <span class="kw">if </span><span class="self">self</span>.create_dir {
             s.push(<span class="string">&quot;CreateDir&quot;</span>);
@@ -325,17 +344,14 @@
         <span class="kw">if </span><span class="self">self</span>.delete {
             s.push(<span class="string">&quot;Delete&quot;</span>);
         }
-        <span class="kw">if </span><span class="self">self</span>.list {
-            s.push(<span class="string">&quot;List&quot;</span>);
-        }
-        <span class="kw">if </span><span class="self">self</span>.scan {
-            s.push(<span class="string">&quot;Scan&quot;</span>);
-        }
         <span class="kw">if </span><span class="self">self</span>.copy {
             s.push(<span class="string">&quot;Copy&quot;</span>);
         }
         <span class="kw">if </span><span class="self">self</span>.rename {
             s.push(<span class="string">&quot;Rename&quot;</span>);
+        }
+        <span class="kw">if </span><span class="self">self</span>.list {
+            s.push(<span class="string">&quot;List&quot;</span>);
         }
         <span class="kw">if </span><span class="self">self</span>.presign {
             s.push(<span class="string">&quot;Presign&quot;</span>);

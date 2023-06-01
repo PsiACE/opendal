@@ -1174,6 +1174,19 @@
 <a href="#1174" id="1174">1174</a>
 <a href="#1175" id="1175">1175</a>
 <a href="#1176" id="1176">1176</a>
+<a href="#1177" id="1177">1177</a>
+<a href="#1178" id="1178">1178</a>
+<a href="#1179" id="1179">1179</a>
+<a href="#1180" id="1180">1180</a>
+<a href="#1181" id="1181">1181</a>
+<a href="#1182" id="1182">1182</a>
+<a href="#1183" id="1183">1183</a>
+<a href="#1184" id="1184">1184</a>
+<a href="#1185" id="1185">1185</a>
+<a href="#1186" id="1186">1186</a>
+<a href="#1187" id="1187">1187</a>
+<a href="#1188" id="1188">1188</a>
+<a href="#1189" id="1189">1189</a>
 </pre><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -1215,7 +1228,6 @@
 <span class="kw">use </span><span class="kw">super</span>::error::parse_error;
 <span class="kw">use </span><span class="kw">super</span>::pager::WasabiPager;
 <span class="kw">use </span><span class="kw">super</span>::writer::WasabiWriter;
-<span class="kw">use </span><span class="kw">crate</span>::ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::raw::<span class="kw-2">*</span>;
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
@@ -1236,13 +1248,16 @@
 ///
 /// This service can be used to:
 ///
+/// - [x] stat
 /// - [x] read
 /// - [x] write
+/// - [x] create_dir
+/// - [x] delete
 /// - [x] copy
+/// - [x] rename
 /// - [x] list
 /// - [x] scan
 /// - [x] presign
-/// - [x] rename
 /// - [ ] blocking
 ///
 /// # Configuration
@@ -2027,7 +2042,7 @@
         </span><span class="kw">let </span>endpoint = <span class="self">self</span>.build_endpoint(<span class="kw-2">&amp;</span>region);
         <span class="macro">debug!</span>(<span class="string">&quot;backend use endpoint: {endpoint}&quot;</span>);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>loader = AwsLoader::new(client.client(), cfg).with_allow_anonymous();
+        <span class="kw">let </span><span class="kw-2">mut </span>loader = AwsLoader::new(client.client(), cfg);
         <span class="kw">if </span><span class="self">self</span>.disable_ec2_metadata {
             loader = loader.with_disable_ec2_metadata();
         }
@@ -2069,6 +2084,7 @@
     <span class="kw">type </span>BlockingReader = ();
     <span class="kw">type </span>Writer = WasabiWriter;
     <span class="kw">type </span>BlockingWriter = ();
+    <span class="kw">type </span>Appender = ();
     <span class="kw">type </span>Pager = WasabiPager;
     <span class="kw">type </span>BlockingPager = ();
 
@@ -2084,14 +2100,24 @@
 
                 read: <span class="bool-val">true</span>,
                 read_can_next: <span class="bool-val">true</span>,
+                read_with_range: <span class="bool-val">true</span>,
 
                 write: <span class="bool-val">true</span>,
-                list: <span class="bool-val">true</span>,
-                scan: <span class="bool-val">true</span>,
+                create_dir: <span class="bool-val">true</span>,
+                delete: <span class="bool-val">true</span>,
                 copy: <span class="bool-val">true</span>,
-                presign: <span class="bool-val">true</span>,
-                batch: <span class="bool-val">true</span>,
                 rename: <span class="bool-val">true</span>,
+
+                list: <span class="bool-val">true</span>,
+                list_without_delimiter: <span class="bool-val">true</span>,
+                list_with_delimiter_slash: <span class="bool-val">true</span>,
+
+                presign: <span class="bool-val">true</span>,
+                presign_stat: <span class="bool-val">true</span>,
+                presign_read: <span class="bool-val">true</span>,
+                presign_write: <span class="bool-val">true</span>,
+
+                batch: <span class="bool-val">true</span>,
 
                 ..Default::default()
             });
@@ -2099,7 +2125,7 @@
         am
     }
 
-    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpCreate) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreate&gt; {
+    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>req =
             <span class="self">self</span>.core
                 .put_object_request(path, <span class="prelude-val">Some</span>(<span class="number">0</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, AsyncBody::Empty)<span class="question-mark">?</span>;
@@ -2113,7 +2139,7 @@
         <span class="kw">match </span>status {
             StatusCode::CREATED | StatusCode::OK =&gt; {
                 resp.into_body().consume().<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(RpCreate::default())
+                <span class="prelude-val">Ok</span>(RpCreateDir::default())
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(parse_error(resp).<span class="kw">await</span><span class="question-mark">?</span>),
         }
@@ -2137,6 +2163,13 @@
     }
 
     <span class="kw">async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpWrite) -&gt; <span class="prelude-ty">Result</span>&lt;(RpWrite, <span class="self">Self</span>::Writer)&gt; {
+        <span class="kw">if </span>args.content_length().is_none() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(
+                ErrorKind::Unsupported,
+                <span class="string">&quot;write without content length is not supported&quot;</span>,
+            ));
+        }
+
         <span class="prelude-val">Ok</span>((
             RpWrite::default(),
             WasabiWriter::new(<span class="self">self</span>.core.clone(), args, path.to_string()),
@@ -2166,7 +2199,7 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(RpStat::new(Metadata::new(EntryMode::DIR)));
         }
 
-        <span class="kw">let </span>resp = <span class="self">self</span>.core.head_object(path, args.if_none_match()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>resp = <span class="self">self</span>.core.head_object(path, <span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>status = resp.status();
 
@@ -2193,21 +2226,14 @@
     <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
         <span class="prelude-val">Ok</span>((
             RpList::default(),
-            WasabiPager::new(<span class="self">self</span>.core.clone(), path, <span class="string">&quot;/&quot;</span>, args.limit()),
-        ))
-    }
-
-    <span class="kw">async fn </span>scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpScan) -&gt; <span class="prelude-ty">Result</span>&lt;(RpScan, <span class="self">Self</span>::Pager)&gt; {
-        <span class="prelude-val">Ok</span>((
-            RpScan::default(),
-            WasabiPager::new(<span class="self">self</span>.core.clone(), path, <span class="string">&quot;&quot;</span>, args.limit()),
+            WasabiPager::new(<span class="self">self</span>.core.clone(), path, args.delimiter(), args.limit()),
         ))
     }
 
     <span class="kw">async fn </span>presign(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpPresign) -&gt; <span class="prelude-ty">Result</span>&lt;RpPresign&gt; {
         <span class="comment">// We will not send this request out, just for signing.
         </span><span class="kw">let </span><span class="kw-2">mut </span>req = <span class="kw">match </span>args.operation() {
-            PresignOperation::Stat(v) =&gt; <span class="self">self</span>.core.head_object_request(path, v.if_none_match())<span class="question-mark">?</span>,
+            PresignOperation::Stat(v) =&gt; <span class="self">self</span>.core.head_object_request(path, v)<span class="question-mark">?</span>,
             PresignOperation::Read(v) =&gt; <span class="self">self</span>.core.get_object_request(
                 path,
                 v.range(),
@@ -2317,12 +2343,12 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_build_endpoint() {
-        <span class="kw">let _ </span>= env_logger::try_init();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt().with_test_writer().try_init();
 
         <span class="kw">let </span>endpoint_cases = <span class="macro">vec!</span>[
             <span class="prelude-val">Some</span>(<span class="string">&quot;s3.wasabisys.com&quot;</span>),
             <span class="prelude-val">Some</span>(<span class="string">&quot;https://s3.wasabisys.com&quot;</span>),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;https://s3.us-east-2.amazonaws.com&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;https://s3.us-east-2.wasabisys.com&quot;</span>),
             <span class="prelude-val">None</span>,
         ];
 

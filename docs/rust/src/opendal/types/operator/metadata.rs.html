@@ -161,6 +161,11 @@
         <span class="self">self</span>.<span class="number">0</span>.capability().write
     }
 
+    <span class="doccomment">/// Check if current backend supports [`Accessor::append`] or not.
+    </span><span class="kw">pub fn </span>can_append(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0</span>.capability().append
+    }
+
     <span class="doccomment">/// Check if current backend supports [`Accessor::copy`] or not.
     </span><span class="kw">pub fn </span>can_copy(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.capability().copy
@@ -174,11 +179,6 @@
     <span class="doccomment">/// Check if current backend supports [`Accessor::list`] or not.
     </span><span class="kw">pub fn </span>can_list(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.capability().list
-    }
-
-    <span class="doccomment">/// Check if current backend supports [`Accessor::scan`] or not.
-    </span><span class="kw">pub fn </span>can_scan(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.<span class="number">0</span>.capability().scan
     }
 
     <span class="doccomment">/// Check if current backend supports [`Accessor::presign`] or not.

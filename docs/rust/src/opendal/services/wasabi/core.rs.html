@@ -952,8 +952,6 @@
 <span class="kw">use </span>std::fmt::Write;
 <span class="kw">use </span>std::time::Duration;
 
-<span class="kw">use </span>backon::ExponentialBuilder;
-<span class="kw">use </span>backon::Retryable;
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>http::header::HeaderName;
 <span class="kw">use </span>http::header::CACHE_CONTROL;
@@ -963,7 +961,6 @@
 <span class="kw">use </span>http::HeaderValue;
 <span class="kw">use </span>http::Request;
 <span class="kw">use </span>http::Response;
-<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>reqsign::AwsCredential;
 <span class="kw">use </span>reqsign::AwsLoader;
 <span class="kw">use </span>reqsign::AwsV4Signer;
@@ -1004,9 +1001,6 @@
     <span class="kw">pub const </span>OVERWRITE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Overwrite&quot;</span>;
 }
 
-<span class="kw">static </span>BACKOFF: Lazy&lt;ExponentialBuilder&gt; =
-    Lazy::new(|| ExponentialBuilder::default().with_jitter());
-
 <span class="kw">pub struct </span>WasabiCore {
     <span class="kw">pub </span>bucket: String,
     <span class="kw">pub </span>endpoint: String,
@@ -1036,15 +1030,21 @@
 <span class="kw">impl </span>WasabiCore {
     <span class="doccomment">/// If credential is not found, we will not sign the request.
     </span><span class="kw">async fn </span>load_credential(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;AwsCredential&gt;&gt; {
-        <span class="kw">let </span>cred = { || <span class="self">self</span>.loader.load() }
-            .retry(<span class="kw-2">&amp;*</span>BACKOFF)
+        <span class="kw">let </span>cred = <span class="self">self
+            </span>.loader
+            .load()
             .<span class="kw">await
             </span>.map_err(new_request_credential_error)<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(cred) = cred {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(cred))
         } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            <span class="comment">// Mark this error as temporary since it could be caused by AWS STS.
+            </span><span class="prelude-val">Err</span>(Error::new(
+                ErrorKind::PermissionDenied,
+                <span class="string">&quot;no valid credential found, please check configuration or try again&quot;</span>,
+            )
+            .set_temporary())
         }
     }
 
@@ -1138,11 +1138,7 @@
 }
 
 <span class="kw">impl </span>WasabiCore {
-    <span class="kw">pub fn </span>head_object_request(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        path: <span class="kw-2">&amp;</span>str,
-        if_none_match: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Request&lt;AsyncBody&gt;&gt; {
+    <span class="kw">pub fn </span>head_object_request(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: <span class="kw-2">&amp;</span>OpStat) -&gt; <span class="prelude-ty">Result</span>&lt;Request&lt;AsyncBody&gt;&gt; {
         <span class="kw">let </span>p = build_abs_path(<span class="kw-2">&amp;</span><span class="self">self</span>.root, path);
 
         <span class="kw">let </span>url = <span class="macro">format!</span>(<span class="string">&quot;{}/{}&quot;</span>, <span class="self">self</span>.endpoint, percent_encode_path(<span class="kw-2">&amp;</span>p));
@@ -1151,8 +1147,12 @@
 
         req = <span class="self">self</span>.insert_sse_headers(req, <span class="bool-val">false</span>);
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(if_none_match) = if_none_match {
-            req = req.header(http::header::IF_NONE_MATCH, if_none_match);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = args.if_match() {
+            req = req.header(http::header::IF_MATCH, v);
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = args.if_none_match() {
+            req = req.header(http::header::IF_NONE_MATCH, v);
         }
 
         <span class="kw">let </span>req = req
@@ -1277,9 +1277,9 @@
     <span class="kw">pub async fn </span>head_object(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         path: <span class="kw-2">&amp;</span>str,
-        if_none_match: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+        args: <span class="kw-2">&amp;</span>OpStat,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;IncomingAsyncBody&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>req = <span class="self">self</span>.head_object_request(path, if_none_match)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>req = <span class="self">self</span>.head_object_request(path, args)<span class="question-mark">?</span>;
 
         <span class="self">self</span>.sign(<span class="kw-2">&amp;mut </span>req).<span class="kw">await</span><span class="question-mark">?</span>;
 
