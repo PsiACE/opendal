@@ -818,6 +818,7 @@
 <a href="#818" id="818">818</a>
 <a href="#819" id="819">819</a>
 <a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -885,6 +886,7 @@
     <span class="kw">pub </span>loader: AliyunLoader,
     <span class="kw">pub </span>signer: AliyunOssSigner,
     <span class="kw">pub </span>write_min_size: usize,
+    <span class="kw">pub </span>batch_max_operations: usize,
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>OssCore {
@@ -971,7 +973,7 @@
     </span><span class="kw">pub fn </span>oss_put_object_request(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         path: <span class="kw-2">&amp;</span>str,
-        size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+        size: <span class="prelude-ty">Option</span>&lt;u64&gt;,
         content_type: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         content_disposition: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         cache_control: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
@@ -1195,7 +1197,7 @@
     <span class="kw">pub async fn </span>oss_put_object(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         path: <span class="kw-2">&amp;</span>str,
-        size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+        size: <span class="prelude-ty">Option</span>&lt;u64&gt;,
         content_type: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         content_disposition: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         cache_control: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,

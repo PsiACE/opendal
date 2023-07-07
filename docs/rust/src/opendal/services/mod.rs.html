@@ -163,6 +163,26 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -254,6 +274,11 @@
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-memory&quot;</span>)]
 </span><span class="kw">pub use </span>memory::Memory;
 
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-mini-moka&quot;</span>)]
+</span><span class="kw">mod </span>mini_moka;
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-mini-moka&quot;</span>)]
+</span><span class="kw">pub use </span><span class="self">self</span>::mini_moka::MiniMoka;
+
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-moka&quot;</span>)]
 </span><span class="kw">mod </span>moka;
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-moka&quot;</span>)]
@@ -268,6 +293,11 @@
 </span><span class="kw">mod </span>oss;
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-oss&quot;</span>)]
 </span><span class="kw">pub use </span>oss::Oss;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-cacache&quot;</span>)]
+</span><span class="kw">mod </span>cacache;
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-cacache&quot;</span>)]
+</span><span class="kw">pub use </span><span class="self">self</span>::cacache::Cacache;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-redis&quot;</span>)]
 </span><span class="kw">mod </span>redis;
@@ -321,6 +351,11 @@
 </span><span class="kw">mod </span>gdrive;
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-gdrive&quot;</span>)]
 </span><span class="kw">pub use </span>gdrive::Gdrive;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-dropbox&quot;</span>)]
+</span><span class="kw">mod </span>dropbox;
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-dropbox&quot;</span>)]
+</span><span class="kw">pub use </span>dropbox::Dropbox;
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-webhdfs&quot;</span>)]
 </span><span class="kw">pub use </span>webhdfs::Webhdfs;
 
@@ -328,4 +363,9 @@
 </span><span class="kw">mod </span>vercel_artifacts;
 <span class="attr">#[cfg(feature = <span class="string">&quot;services-vercel-artifacts&quot;</span>)]
 </span><span class="kw">pub use </span>vercel_artifacts::VercelArtifacts;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-redb&quot;</span>)]
+</span><span class="kw">mod </span>redb;
+<span class="attr">#[cfg(feature = <span class="string">&quot;services-redb&quot;</span>)]
+</span><span class="kw">pub use </span><span class="self">self</span>::redb::Redb;
 </code></pre></div></section></main></body></html>
