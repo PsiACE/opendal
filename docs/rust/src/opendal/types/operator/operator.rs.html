@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `core/src/types/operator/operator.rs`."><title>operator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0 (90c541806 2023-05-31)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-f61008743c98d196.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../opendal/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `core/src/types/operator/operator.rs`."><title>operator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../opendal/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1469,126 +1469,6 @@
 <a href="#1469" id="1469">1469</a>
 <a href="#1470" id="1470">1470</a>
 <a href="#1471" id="1471">1471</a>
-<a href="#1472" id="1472">1472</a>
-<a href="#1473" id="1473">1473</a>
-<a href="#1474" id="1474">1474</a>
-<a href="#1475" id="1475">1475</a>
-<a href="#1476" id="1476">1476</a>
-<a href="#1477" id="1477">1477</a>
-<a href="#1478" id="1478">1478</a>
-<a href="#1479" id="1479">1479</a>
-<a href="#1480" id="1480">1480</a>
-<a href="#1481" id="1481">1481</a>
-<a href="#1482" id="1482">1482</a>
-<a href="#1483" id="1483">1483</a>
-<a href="#1484" id="1484">1484</a>
-<a href="#1485" id="1485">1485</a>
-<a href="#1486" id="1486">1486</a>
-<a href="#1487" id="1487">1487</a>
-<a href="#1488" id="1488">1488</a>
-<a href="#1489" id="1489">1489</a>
-<a href="#1490" id="1490">1490</a>
-<a href="#1491" id="1491">1491</a>
-<a href="#1492" id="1492">1492</a>
-<a href="#1493" id="1493">1493</a>
-<a href="#1494" id="1494">1494</a>
-<a href="#1495" id="1495">1495</a>
-<a href="#1496" id="1496">1496</a>
-<a href="#1497" id="1497">1497</a>
-<a href="#1498" id="1498">1498</a>
-<a href="#1499" id="1499">1499</a>
-<a href="#1500" id="1500">1500</a>
-<a href="#1501" id="1501">1501</a>
-<a href="#1502" id="1502">1502</a>
-<a href="#1503" id="1503">1503</a>
-<a href="#1504" id="1504">1504</a>
-<a href="#1505" id="1505">1505</a>
-<a href="#1506" id="1506">1506</a>
-<a href="#1507" id="1507">1507</a>
-<a href="#1508" id="1508">1508</a>
-<a href="#1509" id="1509">1509</a>
-<a href="#1510" id="1510">1510</a>
-<a href="#1511" id="1511">1511</a>
-<a href="#1512" id="1512">1512</a>
-<a href="#1513" id="1513">1513</a>
-<a href="#1514" id="1514">1514</a>
-<a href="#1515" id="1515">1515</a>
-<a href="#1516" id="1516">1516</a>
-<a href="#1517" id="1517">1517</a>
-<a href="#1518" id="1518">1518</a>
-<a href="#1519" id="1519">1519</a>
-<a href="#1520" id="1520">1520</a>
-<a href="#1521" id="1521">1521</a>
-<a href="#1522" id="1522">1522</a>
-<a href="#1523" id="1523">1523</a>
-<a href="#1524" id="1524">1524</a>
-<a href="#1525" id="1525">1525</a>
-<a href="#1526" id="1526">1526</a>
-<a href="#1527" id="1527">1527</a>
-<a href="#1528" id="1528">1528</a>
-<a href="#1529" id="1529">1529</a>
-<a href="#1530" id="1530">1530</a>
-<a href="#1531" id="1531">1531</a>
-<a href="#1532" id="1532">1532</a>
-<a href="#1533" id="1533">1533</a>
-<a href="#1534" id="1534">1534</a>
-<a href="#1535" id="1535">1535</a>
-<a href="#1536" id="1536">1536</a>
-<a href="#1537" id="1537">1537</a>
-<a href="#1538" id="1538">1538</a>
-<a href="#1539" id="1539">1539</a>
-<a href="#1540" id="1540">1540</a>
-<a href="#1541" id="1541">1541</a>
-<a href="#1542" id="1542">1542</a>
-<a href="#1543" id="1543">1543</a>
-<a href="#1544" id="1544">1544</a>
-<a href="#1545" id="1545">1545</a>
-<a href="#1546" id="1546">1546</a>
-<a href="#1547" id="1547">1547</a>
-<a href="#1548" id="1548">1548</a>
-<a href="#1549" id="1549">1549</a>
-<a href="#1550" id="1550">1550</a>
-<a href="#1551" id="1551">1551</a>
-<a href="#1552" id="1552">1552</a>
-<a href="#1553" id="1553">1553</a>
-<a href="#1554" id="1554">1554</a>
-<a href="#1555" id="1555">1555</a>
-<a href="#1556" id="1556">1556</a>
-<a href="#1557" id="1557">1557</a>
-<a href="#1558" id="1558">1558</a>
-<a href="#1559" id="1559">1559</a>
-<a href="#1560" id="1560">1560</a>
-<a href="#1561" id="1561">1561</a>
-<a href="#1562" id="1562">1562</a>
-<a href="#1563" id="1563">1563</a>
-<a href="#1564" id="1564">1564</a>
-<a href="#1565" id="1565">1565</a>
-<a href="#1566" id="1566">1566</a>
-<a href="#1567" id="1567">1567</a>
-<a href="#1568" id="1568">1568</a>
-<a href="#1569" id="1569">1569</a>
-<a href="#1570" id="1570">1570</a>
-<a href="#1571" id="1571">1571</a>
-<a href="#1572" id="1572">1572</a>
-<a href="#1573" id="1573">1573</a>
-<a href="#1574" id="1574">1574</a>
-<a href="#1575" id="1575">1575</a>
-<a href="#1576" id="1576">1576</a>
-<a href="#1577" id="1577">1577</a>
-<a href="#1578" id="1578">1578</a>
-<a href="#1579" id="1579">1579</a>
-<a href="#1580" id="1580">1580</a>
-<a href="#1581" id="1581">1581</a>
-<a href="#1582" id="1582">1582</a>
-<a href="#1583" id="1583">1583</a>
-<a href="#1584" id="1584">1584</a>
-<a href="#1585" id="1585">1585</a>
-<a href="#1586" id="1586">1586</a>
-<a href="#1587" id="1587">1587</a>
-<a href="#1588" id="1588">1588</a>
-<a href="#1589" id="1589">1589</a>
-<a href="#1590" id="1590">1590</a>
-<a href="#1591" id="1591">1591</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -1606,11 +1486,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-</span><span class="kw">use </span>std::ops::RangeBounds;
-<span class="kw">use </span>std::time::Duration;
+</span><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>bytes::Bytes;
-<span class="kw">use </span>flagset::FlagSet;
 <span class="kw">use </span>futures::stream;
 <span class="kw">use </span>futures::AsyncReadExt;
 <span class="kw">use </span>futures::Stream;
@@ -1672,7 +1550,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_inner(accessor: FusedAccessor) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>limit = accessor
             .info()
-            .capability()
+            .full_capability()
             .batch_max_operations
             .unwrap_or(<span class="number">1000</span>);
         <span class="self">Self </span>{ accessor, limit }
@@ -1742,7 +1620,7 @@
     /// # }
     /// ```
     </span><span class="kw">pub async fn </span>check(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>ds = <span class="self">self</span>.list(<span class="string">&quot;/&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>ds = <span class="self">self</span>.lister(<span class="string">&quot;/&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">match </span>ds.next().<span class="kw">await </span>{
             <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) <span class="kw">if </span>e.kind() != ErrorKind::NotFound =&gt; <span class="prelude-val">Err</span>(e),
@@ -1750,18 +1628,13 @@
         }
     }
 
-    <span class="doccomment">/// Get current path&#39;s metadata **without cache** directly.
+    <span class="doccomment">/// Get current path&#39;s metadata.
     ///
     /// # Notes
     ///
-    /// Use `stat` if you:
-    ///
-    /// - Want to detect the outside changes of path.
-    /// - Don&#39;t want to read from cached metadata.
-    ///
-    /// You may want to use `metadata` if you are working with entries
-    /// returned by [`Lister`]. It&#39;s highly possible that metadata
-    /// you want has already been cached.
+    /// For fetch metadata of entries returned by [`Lister`], it&#39;s better to use [`list_with`] and
+    /// [`lister_with`] with `metakey` query like `Metakey::ContentLength | Metakey::LastModified`
+    /// so that we can avoid extra requests.
     ///
     /// # Examples
     ///
@@ -1834,107 +1707,6 @@
         ));
 
         fut
-    }
-
-    <span class="doccomment">/// Get current metadata with cache.
-    ///
-    /// `metadata` will check the given query with already cached metadata
-    ///  first. And query from storage if not found.
-    ///
-    /// # Notes
-    ///
-    /// Use `metadata` if you are working with entries returned by
-    /// [`Lister`]. It&#39;s highly possible that metadata you want
-    /// has already been cached.
-    ///
-    /// You may want to use `stat`, if you:
-    ///
-    /// - Want to detect the outside changes of path.
-    /// - Don&#39;t want to read from cached metadata.
-    ///
-    /// # Behavior
-    ///
-    /// Visiting not fetched metadata will lead to panic in debug build.
-    /// It must be a bug, please fix it instead.
-    ///
-    /// # Examples
-    ///
-    /// ## Query already cached metadata
-    ///
-    /// By querying metadata with `None`, we can only query in-memory metadata
-    /// cache. In this way, we can make sure that no API call will be sent.
-    ///
-    /// ```
-    /// # use anyhow::Result;
-    /// # use opendal::Operator;
-    /// use opendal::Entry;
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator, entry: Entry) -&gt; Result&lt;()&gt; {
-    /// let meta = op.metadata(&amp;entry, None).await?;
-    /// // content length COULD be correct.
-    /// let _ = meta.content_length();
-    /// // etag COULD be correct.
-    /// let _ = meta.etag();
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// ## Query content length and content type
-    ///
-    /// ```
-    /// # use anyhow::Result;
-    /// # use opendal::Operator;
-    /// use opendal::Entry;
-    /// use opendal::Metakey;
-    ///
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator, entry: Entry) -&gt; Result&lt;()&gt; {
-    /// let meta = op
-    ///     .metadata(&amp;entry, Metakey::ContentLength | Metakey::ContentType)
-    ///     .await?;
-    /// // content length MUST be correct.
-    /// let _ = meta.content_length();
-    /// // etag COULD be correct.
-    /// let _ = meta.etag();
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// ## Query all metadata
-    ///
-    /// By querying metadata with `Complete`, we can make sure that we have fetched all metadata of this entry.
-    ///
-    /// ```
-    /// # use anyhow::Result;
-    /// # use opendal::Operator;
-    /// use opendal::Entry;
-    /// use opendal::Metakey;
-    ///
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator, entry: Entry) -&gt; Result&lt;()&gt; {
-    /// let meta = op.metadata(&amp;entry, Metakey::Complete).await?;
-    /// // content length MUST be correct.
-    /// let _ = meta.content_length();
-    /// // etag MUST be correct.
-    /// let _ = meta.etag();
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub async fn </span>metadata(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        entry: <span class="kw-2">&amp;</span>Entry,
-        flags: <span class="kw">impl </span>Into&lt;FlagSet&lt;Metakey&gt;&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Metadata&gt; {
-        <span class="comment">// Check if cached metadata saticifies the query.
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(meta) = entry.metadata() {
-            <span class="kw">if </span>meta.bit().contains(flags) || meta.bit().contains(Metakey::Complete) {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(meta.clone());
-            }
-        }
-
-        <span class="comment">// Else request from backend..
-        </span><span class="kw">let </span>meta = <span class="self">self</span>.stat(entry.path()).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(meta)
     }
 
     <span class="doccomment">/// Check if this path exists or not.
@@ -2025,7 +1797,7 @@
     /// # }
     /// ```
     </span><span class="kw">pub async fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt; {
-        <span class="self">self</span>.range_read(path, ..).<span class="kw">await
+        <span class="self">self</span>.read_with(path).<span class="kw">await
     </span>}
 
     <span class="doccomment">/// Read the whole path into a bytes with extra options.
@@ -2042,6 +1814,7 @@
     /// # #[tokio::main]
     /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
     /// let bs = op.read_with(&quot;path/to/file&quot;).await?;
+    /// let bs = op.read_with(&quot;path/to/file&quot;).range(0..10).await?;
     /// # Ok(())
     /// # }
     /// ```
@@ -2059,7 +1832,7 @@
                             ErrorKind::IsADirectory,
                             <span class="string">&quot;read path is a directory&quot;</span>,
                         )
-                        .with_operation(<span class="string">&quot;range_read&quot;</span>)
+                        .with_operation(<span class="string">&quot;read&quot;</span>)
                         .with_context(<span class="string">&quot;service&quot;</span>, inner.info().scheme())
                         .with_context(<span class="string">&quot;path&quot;</span>, <span class="kw-2">&amp;</span>path));
                     }
@@ -2079,7 +1852,7 @@
                     <span class="comment">// TODO: use native read api
                     </span>s.read_exact(buf.initialized_mut()).<span class="kw">await</span>.map_err(|err| {
                         Error::new(ErrorKind::Unexpected, <span class="string">&quot;read from storage&quot;</span>)
-                            .with_operation(<span class="string">&quot;range_read&quot;</span>)
+                            .with_operation(<span class="string">&quot;read&quot;</span>)
                             .with_context(<span class="string">&quot;service&quot;</span>, inner.info().scheme().into_static())
                             .with_context(<span class="string">&quot;path&quot;</span>, <span class="kw-2">&amp;</span>path)
                             .with_context(<span class="string">&quot;range&quot;</span>, br.to_string())
@@ -2099,31 +1872,6 @@
         fut
     }
 
-    <span class="doccomment">/// Read the specified range of path into a bytes.
-    ///
-    /// This function will allocate a new bytes internally. For more precise memory control or
-    /// reading data lazily, please use [`Operator::range_reader`]
-    ///
-    /// # Notes
-    ///
-    /// - The returning content&#39;s length may be smaller than the range specified.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use std::io::Result;
-    /// # use opendal::Operator;
-    /// # use futures::TryStreamExt;
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let bs = op.range_read(&quot;path/to/file&quot;, 1024..2048).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub async fn </span>range_read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, range: <span class="kw">impl </span>RangeBounds&lt;u64&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt; {
-        <span class="self">self</span>.read_with(path).range(range).<span class="kw">await
-    </span>}
-
     <span class="doccomment">/// Create a new reader which can read the whole path.
     ///
     /// # Examples
@@ -2141,28 +1889,6 @@
     /// ```
     </span><span class="kw">pub async fn </span>reader(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Reader&gt; {
         <span class="self">self</span>.reader_with(path).<span class="kw">await
-    </span>}
-
-    <span class="doccomment">/// Create a new reader which can read the specified range.
-    ///
-    /// # Notes
-    ///
-    /// - The returning content&#39;s length may be smaller than the range specified.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// # use std::io::Result;
-    /// # use opendal::Operator;
-    /// # use futures::TryStreamExt;
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let r = op.range_reader(&quot;path/to/file&quot;, 1024..2048).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub async fn </span>range_reader(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, range: <span class="kw">impl </span>RangeBounds&lt;u64&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Reader&gt; {
-        <span class="self">self</span>.reader_with(path).range(range).<span class="kw">await
     </span>}
 
     <span class="doccomment">/// Create a new reader with extra options
@@ -2194,12 +1920,12 @@
                             ErrorKind::IsADirectory,
                             <span class="string">&quot;read path is a directory&quot;</span>,
                         )
-                        .with_operation(<span class="string">&quot;Operator::range_reader&quot;</span>)
+                        .with_operation(<span class="string">&quot;Operator::reader&quot;</span>)
                         .with_context(<span class="string">&quot;service&quot;</span>, inner.info().scheme())
                         .with_context(<span class="string">&quot;path&quot;</span>, path));
                     }
 
-                    Reader::create_dir(inner.clone(), <span class="kw-2">&amp;</span>path, args).<span class="kw">await
+                    Reader::create(inner.clone(), <span class="kw-2">&amp;</span>path, args).<span class="kw">await
                 </span>};
 
                 Box::pin(fut)
@@ -2232,32 +1958,6 @@
     </span><span class="kw">pub async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, bs: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>bs = bs.into();
         <span class="self">self</span>.write_with(path, bs).<span class="kw">await
-    </span>}
-
-    <span class="doccomment">/// Append bytes into path.
-    ///
-    /// # Notes
-    ///
-    /// - Append will make sure all bytes has been written, or an error will be returned.
-    /// - Append will create the file if it does not exist.
-    /// - Append always write bytes to the end of the file.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use std::io::Result;
-    /// # use opendal::Operator;
-    /// use bytes::Bytes;
-    ///
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// op.append(&quot;path/to/file&quot;, vec![0; 4096]).await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub async fn </span>append(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, bs: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>bs = bs.into();
-        <span class="self">self</span>.append_with(path, bs).<span class="kw">await
     </span>}
 
     <span class="doccomment">/// Copy a file from `from` to `to`.
@@ -2511,140 +2211,6 @@
         fut
     }
 
-    <span class="doccomment">/// Append multiple bytes into path.
-    ///
-    /// Refer to [`Appender`] for more details.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use std::io::Result;
-    /// # use opendal::Operator;
-    /// use bytes::Bytes;
-    ///
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let mut a = op.appender(&quot;path/to/file&quot;).await?;
-    /// a.append(vec![0; 4096]).await?;
-    /// a.append(vec![1; 4096]).await?;
-    /// a.close().await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub async fn </span>appender(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Appender&gt; {
-        <span class="self">self</span>.appender_with(path).<span class="kw">await
-    </span>}
-
-    <span class="doccomment">/// Append multiple bytes into path with extra options.
-    ///
-    /// Refer to [`Appender`] for more details.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use std::io::Result;
-    /// # use opendal::Operator;
-    /// use bytes::Bytes;
-    ///
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let mut a = op
-    ///     .appender_with(&quot;path/to/file&quot;)
-    ///     .content_type(&quot;application/octet-stream&quot;)
-    ///     .await?;
-    /// a.append(vec![0; 4096]).await?;
-    /// a.append(vec![1; 4096]).await?;
-    /// a.close().await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub fn </span>appender_with(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; FutureAppender {
-        <span class="kw">let </span>path = normalize_path(path);
-
-        <span class="kw">let </span>fut = FutureAppender(OperatorFuture::new(
-            <span class="self">self</span>.inner().clone(),
-            path,
-            OpAppend::default(),
-            |inner, path, args| {
-                <span class="kw">let </span>fut = <span class="kw">async move </span>{
-                    <span class="kw">if </span>!validate_path(<span class="kw-2">&amp;</span>path, EntryMode::FILE) {
-                        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(
-                            ErrorKind::IsADirectory,
-                            <span class="string">&quot;append path is a directory&quot;</span>,
-                        )
-                        .with_operation(<span class="string">&quot;Operator::appender&quot;</span>)
-                        .with_context(<span class="string">&quot;service&quot;</span>, inner.info().scheme().into_static())
-                        .with_context(<span class="string">&quot;path&quot;</span>, <span class="kw-2">&amp;</span>path));
-                    }
-                    <span class="kw">let </span>ap = Appender::create(inner, <span class="kw-2">&amp;</span>path, args).<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="prelude-val">Ok</span>(ap)
-                };
-
-                Box::pin(fut)
-            },
-        ));
-
-        fut
-    }
-
-    <span class="doccomment">/// Append bytes with extra options.
-    ///
-    /// # Notes
-    ///
-    /// - Append will make sure all bytes has been written, or an error will be returned.
-    /// - Append will create the file if it does not exist.
-    /// - Append always write bytes to the end of the file.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use std::io::Result;
-    /// # use opendal::Operator;
-    /// use bytes::Bytes;
-    ///
-    /// # #[tokio::main]
-    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let bs = b&quot;hello, world!&quot;.to_vec();
-    /// let _ = op
-    ///     .append_with(&quot;path/to/file&quot;, bs)
-    ///     .content_type(&quot;text/plain&quot;)
-    ///     .await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    </span><span class="kw">pub fn </span>append_with(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, bs: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; FutureAppend {
-        <span class="kw">let </span>path = normalize_path(path);
-        <span class="kw">let </span>bs = bs.into();
-
-        <span class="kw">let </span>fut = FutureAppend(OperatorFuture::new(
-            <span class="self">self</span>.inner().clone(),
-            path,
-            (OpAppend::default(), bs),
-            |inner, path, (args, bs)| {
-                <span class="kw">let </span>fut = <span class="kw">async move </span>{
-                    <span class="kw">if </span>!validate_path(<span class="kw-2">&amp;</span>path, EntryMode::FILE) {
-                        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(
-                            ErrorKind::IsADirectory,
-                            <span class="string">&quot;append path is a directory&quot;</span>,
-                        )
-                        .with_operation(<span class="string">&quot;Operator::append_with&quot;</span>)
-                        .with_context(<span class="string">&quot;service&quot;</span>, inner.info().scheme().into_static())
-                        .with_context(<span class="string">&quot;path&quot;</span>, <span class="kw-2">&amp;</span>path));
-                    }
-                    <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>a) = inner.append(<span class="kw-2">&amp;</span>path, args).<span class="kw">await</span><span class="question-mark">?</span>;
-                    a.append(bs).<span class="kw">await</span><span class="question-mark">?</span>;
-                    a.close().<span class="kw">await</span><span class="question-mark">?</span>;
-
-                    <span class="prelude-val">Ok</span>(())
-                };
-
-                Box::pin(fut)
-            },
-        ));
-
-        fut
-    }
-
     <span class="doccomment">/// Delete the given path.
     ///
     /// # Notes
@@ -2664,11 +2230,46 @@
     /// # }
     /// ```
     </span><span class="kw">pub async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.delete_with(path).<span class="kw">await
+    </span>}
+
+    <span class="doccomment">/// Delete the given path with extra options.
+    ///
+    /// # Notes
+    ///
+    /// - Deleting a file that does not exist won&#39;t return errors.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use anyhow::Result;
+    /// # use futures::io;
+    /// # use opendal::Operator;
+    ///
+    /// # #[tokio::main]
+    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
+    /// op.delete_with(&quot;test&quot;).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    </span><span class="kw">pub fn </span>delete_with(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; FutureDelete {
         <span class="kw">let </span>path = normalize_path(path);
 
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner().delete(<span class="kw-2">&amp;</span>path, OpDelete::new()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>fut = FutureDelete(OperatorFuture::new(
+            <span class="self">self</span>.inner().clone(),
+            path,
+            OpDelete::default(),
+            |inner, path, args| {
+                <span class="kw">let </span>fut = <span class="kw">async move </span>{
+                    <span class="kw">let _ </span>= inner.delete(<span class="kw-2">&amp;</span>path, args).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="prelude-val">Ok</span>(())
+                };
 
-        <span class="prelude-val">Ok</span>(())
+                Box::pin(fut)
+            },
+        ));
+
+        fut
     }
 
     <span class="doccomment">///
@@ -2722,7 +2323,7 @@
     /// # }
     /// ```
     </span><span class="kw">pub async fn </span>remove_via(<span class="kw-2">&amp;</span><span class="self">self</span>, input: <span class="kw">impl </span>Stream&lt;Item = String&gt; + Unpin) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">if </span><span class="self">self</span>.info().can_batch() {
+        <span class="kw">if </span><span class="self">self</span>.info().full_capability().batch {
             <span class="kw">let </span><span class="kw-2">mut </span>input = input
                 .map(|v| (v, OpDelete::default().into()))
                 .chunks(<span class="self">self</span>.limit());
@@ -2788,9 +2389,9 @@
             <span class="kw">return </span><span class="self">self</span>.delete(path).<span class="kw">await</span>;
         }
 
-        <span class="kw">let </span>obs = <span class="self">self</span>.scan(path).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>obs = <span class="self">self</span>.lister_with(path).delimiter(<span class="string">&quot;&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">if </span><span class="self">self</span>.info().can_batch() {
+        <span class="kw">if </span><span class="self">self</span>.info().full_capability().batch {
             <span class="kw">let </span><span class="kw-2">mut </span>obs = obs.try_chunks(<span class="self">self</span>.limit());
 
             <span class="kw">while let </span><span class="prelude-val">Some</span>(batches) = obs.next().<span class="kw">await </span>{
@@ -2822,32 +2423,47 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// List given path.
+    <span class="doccomment">/// List entries within a given directory.
     ///
-    /// This function will create a new handle to list entries.
+    /// # Notes
     ///
-    /// An error will be returned if given path doesn&#39;t end with `/`.
+    /// ## Listing recursively
+    ///
+    /// This function only read the children of the given directory. To read
+    /// all entries recursively, use `Operator::list_with(&quot;path&quot;).delimiter(&quot;&quot;)`
+    /// instead.
+    ///
+    /// ## Streaming
+    ///
+    /// This function will read all entries in the given directory. It could
+    /// take very long time and consume a lot of memory if the directory
+    /// contains a lot of entries.
+    ///
+    /// In order to avoid this, you can use [`Operator::lister`] to list entries in
+    /// a streaming way.
+    ///
+    /// ## Metadata
+    ///
+    /// The only metadata that is guaranteed to be available is the `Mode`.
+    /// For fetching more metadata, please use [`Operator::list_with`] and `metakey`.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// # use anyhow::Result;
-    /// # use futures::io;
-    /// use futures::TryStreamExt;
     /// use opendal::EntryMode;
     /// use opendal::Metakey;
     /// use opendal::Operator;
     /// # #[tokio::main]
     /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let mut ds = op.list(&quot;path/to/dir/&quot;).await?;
-    /// while let Some(mut de) = ds.try_next().await? {
-    ///     let meta = op.metadata(&amp;de, Metakey::Mode).await?;
-    ///     match meta.mode() {
+    /// let mut entries = op.list(&quot;path/to/dir/&quot;).await?;
+    /// for entry in entries {
+    ///     match entry.metadata().mode() {
     ///         EntryMode::FILE =&gt; {
     ///             println!(&quot;Handling file&quot;)
     ///         }
     ///         EntryMode::DIR =&gt; {
-    ///             println!(&quot;Handling dir like start a new list via meta.path()&quot;)
+    ///             println!(&quot;Handling dir {}&quot;, entry.path())
     ///         }
     ///         EntryMode::Unknown =&gt; continue,
     ///     }
@@ -2855,37 +2471,44 @@
     /// # Ok(())
     /// # }
     /// ```
-    </span><span class="kw">pub async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Lister&gt; {
-        <span class="self">self</span>.list_with(path).<span class="kw">await
+    </span><span class="kw">pub async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Entry&gt;&gt; {
+        <span class="self">self</span>.lister_with(path).<span class="kw">await</span><span class="question-mark">?</span>.try_collect().<span class="kw">await
     </span>}
 
-    <span class="doccomment">/// List given path with OpList.
+    <span class="doccomment">/// List entries within a given directory with options.
     ///
-    /// This function will create a new handle to list entries.
+    /// # Notes
     ///
-    /// An error will be returned if given path doesn&#39;t end with `/`.
+    /// ## For streaming
+    ///
+    /// This function will read all entries in the given directory. It could
+    /// take very long time and consume a lot of memory if the directory
+    /// contains a lot of entries.
+    ///
+    /// In order to avoid this, you can use [`Operator::lister`] to list entries in
+    /// a streaming way.
+    ///
+    /// ## Metadata
+    ///
+    /// The only metadata that is guaranteed to be available is the `Mode`.
+    /// For fetching more metadata, please specify the `metakey`.
     ///
     /// # Examples
     ///
-    /// ## List current dir
+    /// ## List entries with prefix
+    ///
+    /// This function can also be used to list entries in recursive way.
     ///
     /// ```no_run
     /// # use anyhow::Result;
-    /// # use futures::io;
-    /// use futures::TryStreamExt;
     /// use opendal::EntryMode;
     /// use opendal::Metakey;
     /// use opendal::Operator;
     /// # #[tokio::main]
     /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let mut ds = op
-    ///     .list_with(&quot;path/to/dir/&quot;)
-    ///     .limit(10)
-    ///     .start_after(&quot;start&quot;)
-    ///     .await?;
-    /// while let Some(mut de) = ds.try_next().await? {
-    ///     let meta = op.metadata(&amp;de, Metakey::Mode).await?;
-    ///     match meta.mode() {
+    /// let mut entries = op.list_with(&quot;prefix/&quot;).delimiter(&quot;&quot;).await?;
+    /// for entry in entries {
+    ///     match entry.metadata().mode() {
     ///         EntryMode::FILE =&gt; {
     ///             println!(&quot;Handling file&quot;)
     ///         }
@@ -2899,28 +2522,31 @@
     /// # }
     /// ```
     ///
-    /// ## List all files recursively
-    ///
-    /// We can use `op.scan()` as a shorter alias.
+    /// ## List entries with metakey for more metadata
     ///
     /// ```no_run
     /// # use anyhow::Result;
-    /// # use futures::io;
-    /// use futures::TryStreamExt;
     /// use opendal::EntryMode;
     /// use opendal::Metakey;
     /// use opendal::Operator;
     /// # #[tokio::main]
     /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let mut ds = op.list_with(&quot;path/to/dir/&quot;).delimiter(&quot;&quot;).await?;
-    /// while let Some(mut de) = ds.try_next().await? {
-    ///     let meta = op.metadata(&amp;de, Metakey::Mode).await?;
+    /// let mut entries = op
+    ///     .list_with(&quot;dir/&quot;)
+    ///     .metakey(Metakey::ContentLength | Metakey::LastModified)
+    ///     .await?;
+    /// for entry in entries {
+    ///     let meta = entry.metadata();
     ///     match meta.mode() {
     ///         EntryMode::FILE =&gt; {
-    ///             println!(&quot;Handling file&quot;)
+    ///             println!(
+    ///                 &quot;Handling file {} with size {}&quot;,
+    ///                 entry.path(),
+    ///                 meta.content_length()
+    ///             )
     ///         }
     ///         EntryMode::DIR =&gt; {
-    ///             println!(&quot;Handling dir like start a new list via meta.path()&quot;)
+    ///             println!(&quot;Handling dir {}&quot;, entry.path())
     ///         }
     ///         EntryMode::Unknown =&gt; continue,
     ///     }
@@ -2947,26 +2573,34 @@
                         .with_context(<span class="string">&quot;path&quot;</span>, <span class="kw-2">&amp;</span>path));
                     }
 
-                    <span class="kw">let </span>(<span class="kw">_</span>, pager) = inner.list(<span class="kw-2">&amp;</span>path, args).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">let </span>lister = Lister::create(inner, <span class="kw-2">&amp;</span>path, args).<span class="kw">await</span><span class="question-mark">?</span>;
 
-                    <span class="prelude-val">Ok</span>(Lister::new(pager))
-                };
+                    lister.try_collect().<span class="kw">await
+                </span>};
                 Box::pin(fut)
             },
         ));
         fut
     }
 
-    <span class="doccomment">/// List dir in flat way.
+    <span class="doccomment">/// List entries within a given directory as a stream.
     ///
-    /// Also, this function can be used to list a prefix.
+    /// This function will create a new handle to list entries.
     ///
     /// An error will be returned if given path doesn&#39;t end with `/`.
     ///
     /// # Notes
     ///
-    /// - `scan` will not return the prefix itself.
-    /// - `scan` is an alias of `list_with(path).delimiter(&quot;&quot;)`
+    /// ## Listing recursively
+    ///
+    /// This function only read the children of the given directory. To read
+    /// all entries recursively, use [`Operator::lister_with`] and `delimiter(&quot;&quot;)`
+    /// instead.
+    ///
+    /// ## Metadata
+    ///
+    /// The only metadata that is guaranteed to be available is the `Mode`.
+    /// For fetching more metadata, please use [`Operator::lister_with`] and `metakey`.
     ///
     /// # Examples
     ///
@@ -2977,13 +2611,11 @@
     /// use opendal::EntryMode;
     /// use opendal::Metakey;
     /// use opendal::Operator;
-    /// #
     /// # #[tokio::main]
     /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
-    /// let mut ds = op.scan(&quot;/path/to/dir/&quot;).await?;
+    /// let mut ds = op.lister(&quot;path/to/dir/&quot;).await?;
     /// while let Some(mut de) = ds.try_next().await? {
-    ///     let meta = op.metadata(&amp;de, Metakey::Mode).await?;
-    ///     match meta.mode() {
+    ///     match de.metadata().mode() {
     ///         EntryMode::FILE =&gt; {
     ///             println!(&quot;Handling file&quot;)
     ///         }
@@ -2996,10 +2628,138 @@
     /// # Ok(())
     /// # }
     /// ```
-    </span><span class="kw">pub async fn </span>scan(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Lister&gt; {
-        <span class="self">self</span>.list_with(path).delimiter(<span class="string">&quot;&quot;</span>).<span class="kw">await
+    </span><span class="kw">pub async fn </span>lister(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Lister&gt; {
+        <span class="self">self</span>.lister_with(path).<span class="kw">await
     </span>}
+
+    <span class="doccomment">/// List entries within a given directory as a stream with options.
+    ///
+    /// This function will create a new handle to list entries.
+    ///
+    /// An error will be returned if given path doesn&#39;t end with `/`.
+    ///
+    /// # Examples
+    ///
+    /// ## List current dir
+    ///
+    /// ```no_run
+    /// # use anyhow::Result;
+    /// # use futures::io;
+    /// use futures::TryStreamExt;
+    /// use opendal::EntryMode;
+    /// use opendal::Metakey;
+    /// use opendal::Operator;
+    /// # #[tokio::main]
+    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
+    /// let mut ds = op
+    ///     .lister_with(&quot;path/to/dir/&quot;)
+    ///     .limit(10)
+    ///     .start_after(&quot;start&quot;)
+    ///     .await?;
+    /// while let Some(mut entry) = ds.try_next().await? {
+    ///     match entry.metadata().mode() {
+    ///         EntryMode::FILE =&gt; {
+    ///             println!(&quot;Handling file {}&quot;, entry.path())
+    ///         }
+    ///         EntryMode::DIR =&gt; {
+    ///             println!(&quot;Handling dir {}&quot;, entry.path())
+    ///         }
+    ///         EntryMode::Unknown =&gt; continue,
+    ///     }
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// ## List all files recursively
+    ///
+    /// ```no_run
+    /// # use anyhow::Result;
+    /// # use futures::io;
+    /// use futures::TryStreamExt;
+    /// use opendal::EntryMode;
+    /// use opendal::Metakey;
+    /// use opendal::Operator;
+    /// # #[tokio::main]
+    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
+    /// let mut ds = op.lister_with(&quot;path/to/dir/&quot;).delimiter(&quot;&quot;).await?;
+    /// while let Some(mut entry) = ds.try_next().await? {
+    ///     match entry.metadata().mode() {
+    ///         EntryMode::FILE =&gt; {
+    ///             println!(&quot;Handling file {}&quot;, entry.path())
+    ///         }
+    ///         EntryMode::DIR =&gt; {
+    ///             println!(&quot;Handling dir {}&quot;, entry.path())
+    ///         }
+    ///         EntryMode::Unknown =&gt; continue,
+    ///     }
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// ## List files with required metadata
+    ///
+    /// ```no_run
+    /// # use anyhow::Result;
+    /// # use futures::io;
+    /// use futures::TryStreamExt;
+    /// use opendal::EntryMode;
+    /// use opendal::Metakey;
+    /// use opendal::Operator;
+    /// # #[tokio::main]
+    /// # async fn test(op: Operator) -&gt; Result&lt;()&gt; {
+    /// let mut ds = op
+    ///     .lister_with(&quot;path/to/dir/&quot;)
+    ///     .metakey(Metakey::ContentLength | Metakey::LastModified)
+    ///     .await?;
+    /// while let Some(mut entry) = ds.try_next().await? {
+    ///     let meta = entry.metadata();
+    ///     match meta.mode() {
+    ///         EntryMode::FILE =&gt; {
+    ///             println!(
+    ///                 &quot;Handling file {} with size {}&quot;,
+    ///                 entry.path(),
+    ///                 meta.content_length()
+    ///             )
+    ///         }
+    ///         EntryMode::DIR =&gt; {
+    ///             println!(&quot;Handling dir {}&quot;, entry.path())
+    ///         }
+    ///         EntryMode::Unknown =&gt; continue,
+    ///     }
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    </span><span class="kw">pub fn </span>lister_with(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; FutureLister {
+        <span class="kw">let </span>path = normalize_path(path);
+
+        <span class="kw">let </span>fut = FutureLister(OperatorFuture::new(
+            <span class="self">self</span>.inner().clone(),
+            path,
+            OpList::default(),
+            |inner, path, args| {
+                <span class="kw">let </span>fut = <span class="kw">async move </span>{
+                    <span class="kw">if </span>!validate_path(<span class="kw-2">&amp;</span>path, EntryMode::DIR) {
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(
+                            ErrorKind::NotADirectory,
+                            <span class="string">&quot;the path trying to list should end with `/`&quot;</span>,
+                        )
+                        .with_operation(<span class="string">&quot;Operator::list&quot;</span>)
+                        .with_context(<span class="string">&quot;service&quot;</span>, inner.info().scheme().into_static())
+                        .with_context(<span class="string">&quot;path&quot;</span>, <span class="kw-2">&amp;</span>path));
+                    }
+
+                    Lister::create(inner, <span class="kw-2">&amp;</span>path, args).<span class="kw">await
+                </span>};
+                Box::pin(fut)
+            },
+        ));
+        fut
+    }
 }
+
 <span class="doccomment">/// Operator presign API.
 </span><span class="kw">impl </span>Operator {
     <span class="doccomment">/// Presign an operation for stat(head).
@@ -3067,7 +2827,7 @@
         <span class="prelude-val">Ok</span>(rp.into_presigned_request())
     }
 
-    <span class="doccomment">/// Presign an operation for read option described in OpenDAL [rfc-1735](../../docs/rfcs/1735_operation_extension.md).
+    <span class="doccomment">/// Presign an operation for read option described in OpenDAL [RFC-1735][`crate::docs::rfcs::rfc_1735_operation_extension`].
     ///
     /// You can pass `OpRead` to this method to specify the content disposition.
     ///
@@ -3137,7 +2897,7 @@
         <span class="self">self</span>.presign_write_with(path, expire).<span class="kw">await
     </span>}
 
-    <span class="doccomment">/// Presign an operation for write with option described in OpenDAL [rfc-0661](../../docs/rfcs/0661-path-in-accessor.md)
+    <span class="doccomment">/// Presign an operation for write with option described in OpenDAL [RFC-0661][`crate::docs::rfcs::rfc_0661_path_in_accessor`]
     ///
     /// You can pass `OpWrite` to this method to specify the content length and content type.
     ///
