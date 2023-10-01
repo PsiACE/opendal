@@ -40,7 +40,7 @@ jobs:
   redis:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Redis Server
         shell: bash
         working-directory: core
@@ -62,7 +62,7 @@ jobs:
   redis-tls:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Redis with TLS
         shell: bash
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Rust toolchain
         uses: ./.github/actions/setup
         with:
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Redis Cluster with TLS
         shell: bash
@@ -154,7 +154,7 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Rust toolchain
         uses: ./.github/actions/setup
         with:
@@ -177,7 +177,7 @@ jobs:
         ports:
           - 6379:6666
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Rust toolchain
         uses: ./.github/actions/setup
         with:
