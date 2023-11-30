@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `core/src/services/gcs/backend.rs`."><title>backend.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../opendal/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `core/src/services/gcs/backend.rs`."><title>backend.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../opendal/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -593,73 +593,6 @@
 <a href="#593" id="593">593</a>
 <a href="#594" id="594">594</a>
 <a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a>
-<a href="#606" id="606">606</a>
-<a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
-<a href="#609" id="609">609</a>
-<a href="#610" id="610">610</a>
-<a href="#611" id="611">611</a>
-<a href="#612" id="612">612</a>
-<a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
-<a href="#626" id="626">626</a>
-<a href="#627" id="627">627</a>
-<a href="#628" id="628">628</a>
-<a href="#629" id="629">629</a>
-<a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
-<a href="#645" id="645">645</a>
-<a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
-<a href="#651" id="651">651</a>
-<a href="#652" id="652">652</a>
-<a href="#653" id="653">653</a>
-<a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -692,17 +625,16 @@
 <span class="kw">use </span>serde::Deserialize;
 <span class="kw">use </span>serde_json;
 
-<span class="kw">use </span><span class="kw">super</span>::core::GcsCore;
+<span class="kw">use </span><span class="kw">super</span>::core::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::error::parse_error;
-<span class="kw">use </span><span class="kw">super</span>::pager::GcsPager;
+<span class="kw">use </span><span class="kw">super</span>::lister::GcsLister;
 <span class="kw">use </span><span class="kw">super</span>::writer::GcsWriter;
 <span class="kw">use </span><span class="kw">crate</span>::raw::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::services::gcs::writer::GcsWriters;
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
 <span class="kw">const </span>DEFAULT_GCS_ENDPOINT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://storage.googleapis.com&quot;</span>;
 <span class="kw">const </span>DEFAULT_GCS_SCOPE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://www.googleapis.com/auth/devstorage.read_write&quot;</span>;
-<span class="doccomment">/// It&#39;s recommended that you use at least 8 MiB for the chunk size.
-</span><span class="kw">const </span>DEFAULT_WRITE_FIXED_SIZE: usize = <span class="number">8 </span>* <span class="number">1024 </span>* <span class="number">1024</span>;
 
 <span class="doccomment">/// [Google Cloud Storage](https://cloud.google.com/storage) services support.
 </span><span class="attr">#[doc = <span class="macro">include_str!</span>(<span class="string">&quot;docs.md&quot;</span>)]
@@ -729,9 +661,6 @@
     customed_token_loader: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>GoogleTokenLoad&gt;&gt;,
     predefined_acl: <span class="prelude-ty">Option</span>&lt;String&gt;,
     default_storage_class: <span class="prelude-ty">Option</span>&lt;String&gt;,
-
-    <span class="doccomment">/// the fixed size writer uses to flush into underlying storage.
-    </span>write_fixed_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
 }
 
 <span class="kw">impl </span>GcsBuilder {
@@ -849,16 +778,6 @@
         };
         <span class="self">self
     </span>}
-
-    <span class="doccomment">/// The buffer size should be a multiple of 256 KiB (256 x 1024 bytes), unless it&#39;s the last chunk that completes the upload.
-    /// Larger chunk sizes typically make uploads faster, but note that there&#39;s a tradeoff between speed and memory usage.
-    /// It&#39;s recommended that you use at least 8 MiB for the chunk size.
-    /// Reference: [Perform resumable uploads](https://cloud.google.com/storage/docs/performing-resumable-uploads)
-    </span><span class="kw">pub fn </span>write_fixed_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fixed_buffer_size: usize) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="self">self</span>.write_fixed_size = <span class="prelude-val">Some</span>(fixed_buffer_size);
-
-        <span class="self">self
-    </span>}
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>GcsBuilder {
@@ -958,17 +877,6 @@
 
         <span class="kw">let </span>signer = GoogleSigner::new(<span class="string">&quot;storage&quot;</span>);
 
-        <span class="kw">let </span>write_fixed_size = <span class="self">self</span>.write_fixed_size.unwrap_or(DEFAULT_WRITE_FIXED_SIZE);
-        <span class="comment">// GCS requires write must align with 256 KiB.
-        </span><span class="kw">if </span>write_fixed_size % (<span class="number">256 </span>* <span class="number">1024</span>) != <span class="number">0 </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(
-                ErrorKind::ConfigInvalid,
-                <span class="string">&quot;The write fixed buffer size is misconfigured&quot;</span>,
-            )
-            .with_context(<span class="string">&quot;service&quot;</span>, Scheme::Gcs)
-            .with_context(<span class="string">&quot;write_fixed_size&quot;</span>, write_fixed_size.to_string()));
-        }
-
         <span class="kw">let </span>backend = GcsBackend {
             core: Arc::new(GcsCore {
                 endpoint,
@@ -980,7 +888,6 @@
                 credential_loader: cred_loader,
                 predefined_acl: <span class="self">self</span>.predefined_acl.clone(),
                 default_storage_class: <span class="self">self</span>.default_storage_class.clone(),
-                write_fixed_size,
             }),
         };
 
@@ -998,10 +905,10 @@
 </span><span class="kw">impl </span>Accessor <span class="kw">for </span>GcsBackend {
     <span class="kw">type </span>Reader = IncomingAsyncBody;
     <span class="kw">type </span>BlockingReader = ();
-    <span class="kw">type </span>Writer = GcsWriter;
+    <span class="kw">type </span>Writer = GcsWriters;
     <span class="kw">type </span>BlockingWriter = ();
-    <span class="kw">type </span>Pager = GcsPager;
-    <span class="kw">type </span>BlockingPager = ();
+    <span class="kw">type </span>Lister = oio::PageLister&lt;GcsLister&gt;;
+    <span class="kw">type </span>BlockingLister = ();
 
     <span class="kw">fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AccessorInfo {
         <span class="kw">let </span><span class="kw-2">mut </span>am = AccessorInfo::default();
@@ -1009,8 +916,6 @@
             .set_root(<span class="kw-2">&amp;</span><span class="self">self</span>.core.root)
             .set_name(<span class="kw-2">&amp;</span><span class="self">self</span>.core.bucket)
             .set_native_capability(Capability {
-                create_dir: <span class="bool-val">true</span>,
-
                 stat: <span class="bool-val">true</span>,
                 stat_with_if_match: <span class="bool-val">true</span>,
                 stat_with_if_none_match: <span class="bool-val">true</span>,
@@ -1022,17 +927,24 @@
                 read_with_if_none_match: <span class="bool-val">true</span>,
 
                 write: <span class="bool-val">true</span>,
-                write_can_sink: <span class="bool-val">true</span>,
+                write_can_empty: <span class="bool-val">true</span>,
+                write_can_multi: <span class="bool-val">true</span>,
                 write_with_content_type: <span class="bool-val">true</span>,
-                write_without_content_length: <span class="bool-val">true</span>,
+                <span class="comment">// The buffer size should be a multiple of 256 KiB (256 x 1024 bytes), unless it&#39;s the last chunk that completes the upload.
+                // Larger chunk sizes typically make uploads faster, but note that there&#39;s a tradeoff between speed and memory usage.
+                // It&#39;s recommended that you use at least 8 MiB for the chunk size.
+                //
+                // Reference: [Perform resumable uploads](https://cloud.google.com/storage/docs/performing-resumable-uploads)
+                </span>write_multi_align_size: <span class="prelude-val">Some</span>(<span class="number">256 </span>* <span class="number">1024 </span>* <span class="number">1024</span>),
+
                 delete: <span class="bool-val">true</span>,
                 copy: <span class="bool-val">true</span>,
 
                 list: <span class="bool-val">true</span>,
                 list_with_limit: <span class="bool-val">true</span>,
                 list_with_start_after: <span class="bool-val">true</span>,
-                list_with_delimiter_slash: <span class="bool-val">true</span>,
-                list_without_delimiter: <span class="bool-val">true</span>,
+                list_without_recursive: <span class="bool-val">true</span>,
+                list_with_recursive: <span class="bool-val">true</span>,
 
                 batch: <span class="bool-val">true</span>,
                 batch_max_operations: <span class="prelude-val">Some</span>(<span class="number">100</span>),
@@ -1046,45 +958,24 @@
         am
     }
 
-    <span class="kw">async fn </span>create_dir(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpCreateDir) -&gt; <span class="prelude-ty">Result</span>&lt;RpCreateDir&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>req = <span class="self">self</span>.core.gcs_insert_object_request(
-            path,
-            <span class="prelude-val">Some</span>(<span class="number">0</span>),
-            <span class="kw-2">&amp;</span>OpWrite::default(),
-            AsyncBody::Empty,
-        )<span class="question-mark">?</span>;
-
-        <span class="self">self</span>.core.sign(<span class="kw-2">&amp;mut </span>req).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">let </span>resp = <span class="self">self</span>.core.send(req).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">if </span>resp.status().is_success() {
-            resp.into_body().consume().<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(RpCreateDir::default())
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(parse_error(resp).<span class="kw">await</span><span class="question-mark">?</span>)
-        }
-    }
-
     <span class="kw">async fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpRead) -&gt; <span class="prelude-ty">Result</span>&lt;(RpRead, <span class="self">Self</span>::Reader)&gt; {
-        <span class="kw">let </span>resp = <span class="self">self
-            </span>.core
-            .gcs_get_object(path, args.range(), args.if_match(), args.if_none_match())
-            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>resp = <span class="self">self</span>.core.gcs_get_object(path, <span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">if </span>resp.status().is_success() {
-            <span class="kw">let </span>meta = parse_into_metadata(path, resp.headers())<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>((RpRead::with_metadata(meta), resp.into_body()))
+            <span class="kw">let </span>size = parse_content_length(resp.headers())<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>((RpRead::new().with_size(size), resp.into_body()))
+        } <span class="kw">else if </span>resp.status() == StatusCode::RANGE_NOT_SATISFIABLE {
+            <span class="prelude-val">Ok</span>((RpRead::new(), IncomingAsyncBody::empty()))
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(parse_error(resp).<span class="kw">await</span><span class="question-mark">?</span>)
         }
     }
 
     <span class="kw">async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpWrite) -&gt; <span class="prelude-ty">Result</span>&lt;(RpWrite, <span class="self">Self</span>::Writer)&gt; {
-        <span class="prelude-val">Ok</span>((
-            RpWrite::default(),
-            GcsWriter::new(<span class="self">self</span>.core.clone(), path, args),
-        ))
+        <span class="kw">let </span>w = GcsWriter::new(<span class="self">self</span>.core.clone(), path, args);
+        <span class="kw">let </span>w = oio::RangeWriter::new(w);
+
+        <span class="prelude-val">Ok</span>((RpWrite::default(), w))
     }
 
     <span class="kw">async fn </span>copy(<span class="kw-2">&amp;</span><span class="self">self</span>, from: <span class="kw-2">&amp;</span>str, to: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpCopy) -&gt; <span class="prelude-ty">Result</span>&lt;RpCopy&gt; {
@@ -1099,50 +990,34 @@
     }
 
     <span class="kw">async fn </span>stat(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpStat) -&gt; <span class="prelude-ty">Result</span>&lt;RpStat&gt; {
-        <span class="comment">// Stat root always returns a DIR.
-        </span><span class="kw">if </span>path == <span class="string">&quot;/&quot; </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(RpStat::new(Metadata::new(EntryMode::DIR)));
+        <span class="kw">let </span>resp = <span class="self">self</span>.core.gcs_get_object_metadata(path, <span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="kw">if </span>!resp.status().is_success() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(parse_error(resp).<span class="kw">await</span><span class="question-mark">?</span>);
         }
 
-        <span class="kw">let </span>resp = <span class="self">self
-            </span>.core
-            .gcs_get_object_metadata(path, args.if_match(), args.if_none_match())
-            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>slc = resp.into_body().bytes().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">if </span>resp.status().is_success() {
-            <span class="comment">// read http response body
-            </span><span class="kw">let </span>slc = resp.into_body().bytes().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>meta: GetObjectJsonResponse =
+            serde_json::from_slice(<span class="kw-2">&amp;</span>slc).map_err(new_json_deserialize_error)<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>meta: GetObjectJsonResponse =
-                serde_json::from_slice(<span class="kw-2">&amp;</span>slc).map_err(new_json_deserialize_error)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>m = Metadata::new(EntryMode::FILE);
 
-            <span class="kw">let </span>mode = <span class="kw">if </span>path.ends_with(<span class="string">&#39;/&#39;</span>) {
-                EntryMode::DIR
-            } <span class="kw">else </span>{
-                EntryMode::FILE
-            };
-            <span class="kw">let </span><span class="kw-2">mut </span>m = Metadata::new(mode);
+        m.set_etag(<span class="kw-2">&amp;</span>meta.etag);
+        m.set_content_md5(<span class="kw-2">&amp;</span>meta.md5_hash);
 
-            m.set_etag(<span class="kw-2">&amp;</span>meta.etag);
-            m.set_content_md5(<span class="kw-2">&amp;</span>meta.md5_hash);
-
-            <span class="kw">let </span>size = meta
-                .size
-                .parse::&lt;u64&gt;()
-                .map_err(|e| Error::new(ErrorKind::Unexpected, <span class="string">&quot;parse u64&quot;</span>).set_source(e))<span class="question-mark">?</span>;
-            m.set_content_length(size);
-            <span class="kw">if </span>!meta.content_type.is_empty() {
-                m.set_content_type(<span class="kw-2">&amp;</span>meta.content_type);
-            }
-
-            m.set_last_modified(parse_datetime_from_rfc3339(<span class="kw-2">&amp;</span>meta.updated)<span class="question-mark">?</span>);
-
-            <span class="prelude-val">Ok</span>(RpStat::new(m))
-        } <span class="kw">else if </span>resp.status() == StatusCode::NOT_FOUND &amp;&amp; path.ends_with(<span class="string">&#39;/&#39;</span>) {
-            <span class="prelude-val">Ok</span>(RpStat::new(Metadata::new(EntryMode::DIR)))
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(parse_error(resp).<span class="kw">await</span><span class="question-mark">?</span>)
+        <span class="kw">let </span>size = meta
+            .size
+            .parse::&lt;u64&gt;()
+            .map_err(|e| Error::new(ErrorKind::Unexpected, <span class="string">&quot;parse u64&quot;</span>).set_source(e))<span class="question-mark">?</span>;
+        m.set_content_length(size);
+        <span class="kw">if </span>!meta.content_type.is_empty() {
+            m.set_content_type(<span class="kw-2">&amp;</span>meta.content_type);
         }
+
+        m.set_last_modified(parse_datetime_from_rfc3339(<span class="kw-2">&amp;</span>meta.updated)<span class="question-mark">?</span>);
+
+        <span class="prelude-val">Ok</span>(RpStat::new(m))
     }
 
     <span class="kw">async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, <span class="kw">_</span>: OpDelete) -&gt; <span class="prelude-ty">Result</span>&lt;RpDelete&gt; {
@@ -1156,17 +1031,16 @@
         }
     }
 
-    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
-        <span class="prelude-val">Ok</span>((
-            RpList::default(),
-            GcsPager::new(
-                <span class="self">self</span>.core.clone(),
-                path,
-                args.delimiter(),
-                args.limit(),
-                args.start_after(),
-            ),
-        ))
+    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Lister)&gt; {
+        <span class="kw">let </span>l = GcsLister::new(
+            <span class="self">self</span>.core.clone(),
+            path,
+            args.recursive(),
+            args.limit(),
+            args.start_after(),
+        );
+
+        <span class="prelude-val">Ok</span>((RpList::default(), oio::PageLister::new(l)))
     }
 
     <span class="kw">async fn </span>batch(<span class="kw-2">&amp;</span><span class="self">self</span>, args: OpBatch) -&gt; <span class="prelude-ty">Result</span>&lt;RpBatch&gt; {
@@ -1231,19 +1105,11 @@
     <span class="kw">async fn </span>presign(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpPresign) -&gt; <span class="prelude-ty">Result</span>&lt;RpPresign&gt; {
         <span class="comment">// We will not send this request out, just for signing.
         </span><span class="kw">let </span><span class="kw-2">mut </span>req = <span class="kw">match </span>args.operation() {
-            PresignOperation::Stat(v) =&gt; {
+            PresignOperation::Stat(v) =&gt; <span class="self">self</span>.core.gcs_head_object_xml_request(path, v)<span class="question-mark">?</span>,
+            PresignOperation::Read(v) =&gt; <span class="self">self</span>.core.gcs_get_object_xml_request(path, v)<span class="question-mark">?</span>,
+            PresignOperation::Write(v) =&gt; {
                 <span class="self">self</span>.core
-                    .gcs_head_object_xml_request(path, v.if_match(), v.if_none_match())<span class="question-mark">?
-            </span>}
-            PresignOperation::Read(v) =&gt; <span class="self">self</span>.core.gcs_get_object_xml_request(
-                path,
-                v.range(),
-                v.if_match(),
-                v.if_none_match(),
-            )<span class="question-mark">?</span>,
-            PresignOperation::Write(<span class="kw">_</span>) =&gt; {
-                <span class="self">self</span>.core
-                    .gcs_insert_object_xml_request(path, <span class="prelude-val">None</span>, AsyncBody::Empty)<span class="question-mark">?
+                    .gcs_insert_object_xml_request(path, v, AsyncBody::Empty)<span class="question-mark">?
             </span>}
         };
 
